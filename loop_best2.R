@@ -1,0 +1,569 @@
+##################################
+# Assignment 3: Data Science Course
+# Kyle Ott & Cornelius Schneider
+# 14 November 2014
+##################################
+
+# Load packages
+library(httr)
+library(dplyr)
+library(XML)
+library(ggplot2)
+library(stringr)
+library(car)
+library(devtools)
+library(rsdmx)
+library(stargazer)
+library(knitr)
+library(CausalImpact)
+library(tidyr)
+
+#################
+# Our Unique, Tidy, Open, Reproducible Data 
+#################
+
+## this part is scraping from the newspaper website for the years 2009 to 2013
+
+# 2013 data
+tables2013 = data.frame()
+
+for (i in 1:30){
+
+# URL with the ta table
+URL_temp2013 <- paste0('http://www.taloussanomat.fi/verotiedot/2013/suurituloisimmat/?n=', i)
+if (i==1) { tables2013 <- URL_temp2013 %>% GET() %>% content(as = 'parsed') %>% readHTMLTable()
+            tables2013 <- tables2013[[1]] }
+else if (i!=1){
+
+  # Gather content and parse all tables #
+table_temp2013 <- URL_temp2013 %>% GET() %>% content(as = 'parsed') %>% readHTMLTable()
+
+# Identify correct table
+# names(table) # the table does not have an ID
+
+# select first table with taxData
+tables_df_temp2013 <- table_temp2013[[1]]
+
+tables2013 <- rbind(tables2013, tables_df_temp2013)
+
+}
+#end loop
+}
+tables2013$year <- 2013
+
+# 2012 data
+tables2012 = data.frame()
+
+for (i in 1:30){
+  
+  # URL with the medals table
+  URL_temp2012 <- paste0('http://www.taloussanomat.fi/verotiedot/2012/suurituloisimmat/?n=', i)
+  if (i==1) { tables2012 <- URL_temp2012 %>% GET() %>% content(as = 'parsed') %>% readHTMLTable()
+              tables2012 <- tables2012[[1]] }
+  else if (i!=1){
+    #### Gather content and parse all tables ####
+    table_temp2012 <- URL_temp2012 %>% GET() %>% content(as = 'parsed') %>% readHTMLTable()
+    
+    # Identify correct table
+    # names(table) # the table does not have an ID
+    
+    # select first table with taxData
+    tables_df_temp2012 <- table_temp2012[[1]]
+    
+    tables2012 <- rbind(tables2012, tables_df_temp2012)
+  }
+  ##end loop
+}
+
+tables2012$year <- 2012
+
+
+## 2011 data
+tables2011 = data.frame()
+
+#note that for some years they don't have complete obs (15,000), which is why the loop is only up to 28 for the following year
+for (i in 1:28){
+  
+  # URL with the medals table
+  URL_temp2011 <- paste0('http://www.taloussanomat.fi/verotiedot/2011/suurituloisimmat/?n=', i)
+  if (i==1) { tables2011 <- URL_temp2011 %>% GET() %>% content(as = 'parsed') %>% readHTMLTable()
+              tables2011 <- tables2011[[1]] }
+  else if (i!=1){
+    #### Gather content and parse all tables ####
+    table_temp2011 <- URL_temp2011 %>% GET() %>% content(as = 'parsed') %>% readHTMLTable()
+    
+    # Identify correct table
+    # names(table) # the table does not have an ID
+    
+    # select first table with taxData
+    tables_df_temp2011 <- table_temp2011[[1]]
+    
+    tables2011 <- rbind(tables2011, tables_df_temp2011)
+  }
+  #end loop
+}
+
+tables2011$year <- 2011
+
+# 2010 data
+tables2010 = data.frame()
+
+for (i in 1:29){
+  
+  # URL with the medals table
+  URL_temp2010 <- paste0('http://www.taloussanomat.fi/verotiedot/2010/suurituloisimmat/?n=', i)
+  if (i==1) { tables2010 <- URL_temp2010 %>% GET() %>% content(as = 'parsed') %>% readHTMLTable()
+              tables2010 <- tables2010[[1]] }
+  else if (i!=1){
+    #### Gather content and parse all tables ####
+    table_temp2010 <- URL_temp2010 %>% GET() %>% content(as = 'parsed') %>% readHTMLTable()
+        
+    # select first table with taxData
+    tables_df_temp2010 <- table_temp2010[[1]]
+    
+    tables2010 <- rbind(tables2010, tables_df_temp2010)
+  }
+  ##end loop
+}
+
+tables2010$year <- 2010
+
+## 2009 data
+tables2009 = data.frame()
+
+for (i in 1:25){
+  
+  # URL with the medals table
+  URL_temp2009 <- paste0('http://www.taloussanomat.fi/verotiedot/2009/suurituloisimmat/?n=', i)
+  if (i==1) { tables2009 <- URL_temp2009 %>% GET() %>% content(as = 'parsed') %>% readHTMLTable()
+              tables2009 <- tables2009[[1]] }
+  else if (i!=1){
+    #### Gather content and parse all tables ####
+    table_temp2009 <- URL_temp2009 %>% GET() %>% content(as = 'parsed') %>% readHTMLTable()
+    
+    # select first table with taxData
+    tables_df_temp2009 <- table_temp2009[[1]]
+    
+    tables2009 <- rbind(tables2009, tables_df_temp2009)
+  }
+  ##end loop
+}
+
+tables2009$year <- 2009
+
+#appending scraped tables
+all <- rbind(tables2009, tables2010, tables2011, tables2012, tables2013)
+
+
+class(all$year)
+
+#changing the titles to english
+all <- plyr::rename(x = all,
+                           replace = c("Nimi" = "name",
+                                       "Tulot yht" = "total_inc",
+                                       "Verot" = "taxes_paid",
+                                       "Suhde" = "ratio"
+                                       ))
+str(all)
+
+#cleaning ratio
+all$ratio2 <- str_sub(all$ratio, 1, 2)
+summary(all$ratio2)
+all$ratio3 <- as.numeric(all$ratio2, length=2)
+summary(all$ratio3)
+
+#cleaning taxes_paid
+sub(' â¬ $', '',all$taxes_paid)
+all$taxes_paid2 <- sub(' â¬$', '',all$taxes_paid)
+all$taxes_paid3 <- str_trim(all$taxes_paid2)
+all$taxes_paid4 <-sub(' ', '',all$taxes_paid3)
+all$taxes_paid5 <-sub(' ', '',all$taxes_paid4)
+all$taxes_paid6 <- as.numeric(all$taxes_paid5, length=9)
+summary(all$taxes_paid6)
+
+#cleaning total_inc
+all$total_inc2 <- sub(' â¬$', '',all$total_inc)
+all$total_inc3 <- str_trim(all$total_inc2)
+all$total_inc4 <-sub(' ', '',all$total_inc3)
+all$total_inc5 <-sub(' ', '',all$total_inc4)
+all$total_inc6 <- as.numeric(all$total_inc5, length=13)
+summary(all$total_inc6)
+
+#dropping name and keeping rank in given year
+all$name2 <- str_sub(all$name, 1, 5)
+all$name3 <- sub('\\. ..$', '',all$name2)
+all$name4 <- sub('\\. .$', '',all$name3)
+all$name5 <- sub('\\. $', '',all$name4)
+all$name6 <- sub('\\.$', '',all$name5)
+all$name7 <- as.numeric(all$name6, length=5)
+summary(all$name7)
+
+#dropping name and keeping rank in given year
+all$justname <- str_sub(all$name)
+all$justname <- sub('^.*\\. ', '',all$name)
+
+
+clean <- all[, (colnames(all) %in% c("justname", "name7", "total_inc6", "taxes_paid6", "ratio3", "year"))]
+str(clean)
+clean <- plyr::rename(x = clean,
+                             replace = c("total_inc6" = "total_inc",
+                                         "taxes_paid6" = "taxes_paid",
+                                         "name7" = "rank",
+                                         "ratio3" = "ratio"
+                             ))
+
+## now we have a clean and tidy dataset!
+
+
+## working on making this a panel dataset
+
+cleangroup <- group_by(clean, justname)
+unique(cleangroup$justname)
+
+clean <- mutate(cleangroup, numberobs = n())
+clean5obs <- filter(clean, numberobs == 5)
+head(clean5obs)
+clean5obs <- arrange(clean5obs, desc(justname))
+n_distinct(clean5obs$justname)
+
+clean5obs$id2 <- id(clean5obs[c("justname", "numberobs")], drop = FALSE)
+summary(clean5obs$id2)
+
+bins <- mutate(bins, quant1 = quantile(total_inc, 0.1))
+summarise(bins, median(quant1))
+bins <- mutate(bins, quant2 = quantile(total_inc, 0.2))
+summarise(bins, median(quant2))
+bins <- mutate(bins, quant = quantile(total_inc, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9))
+
+## Creating graph like finnish top income paper
+bins <- group_by(clean, year)
+
+bins1 <- subset(bins, total_inc <= quantile(total_inc, 0.1))
+binplot1 <- mutate(bins1, avetax1 = mean(ratio))
+binplot1a <- summarise(binplot1, median(avetax1))
+
+bins2 <- subset(bins, total_inc <= quantile(total_inc, 0.2))
+binplot2 <- mutate(bins2, avetax2 = mean(ratio))
+binplot2a <- summarise(binplot2, median(avetax2))
+
+binplots <- merge(binplot1a, binplot2a,
+               by = c('year'))
+
+bins3 <- subset(bins, total_inc <= quantile(total_inc, 0.3))
+binplot3 <- mutate(bins3, avetax3 = mean(ratio))
+binplot3a <- summarise(binplot3, median(avetax3))
+
+binplots <- merge(binplots, binplot3a,
+                  by = c('year'))
+                  
+bins4 <- subset(bins, total_inc <= quantile(total_inc, 0.4))
+binplot4 <- mutate(bins4, avetax4 = mean(ratio))
+binplot4a <- summarise(binplot4, median(avetax4))
+
+binplots <- merge(binplots, binplot4a,
+                  by = c('year'))
+bins5 <- subset(bins, total_inc <= quantile(total_inc, 0.5))
+binplot5 <- mutate(bins5, avetax5 = mean(ratio))
+binplot5a <- summarise(binplot5, median(avetax5))
+
+binplots <- merge(binplots, binplot5a,
+                  by = c('year'))
+bins6 <- subset(bins, total_inc <= quantile(total_inc, 0.6))
+binplot6 <- mutate(bins6, avetax6 = mean(ratio))
+binplot6a <- summarise(binplot6, median(avetax6))
+
+binplots <- merge(binplots, binplot6a,
+                  by = c('year'))
+bins7 <- subset(bins, total_inc <= quantile(total_inc, 0.7))
+binplot7 <- mutate(bins6, avetax7 = mean(ratio))
+binplot7a <- summarise(binplot6, median(avetax7))
+
+binplots <- merge(binplots, binplot7a,
+                  by = c('year'))
+bins8 <- subset(bins, total_inc <= quantile(total_inc, 0.8))
+binplot8 <- mutate(bins8, avetax8 = mean(ratio))
+binplot8a <- summarise(binplot8, median(avetax8))
+
+binplots <- merge(binplots, binplot8a,
+                  by = c('year'))
+bins9 <- subset(bins, total_inc <= quantile(total_inc, 0.9))
+binplot9 <- mutate(bins9, avetax9 = mean(ratio))
+binplot9a <- summarise(binplot9, median(avetax9))
+
+binplots <- merge(binplots, binplot9a,
+                  by = c('year'))
+## how do i plot binplots? is it worth it?
+
+
+
+
+
+
+
+sharefigure <- qplot(shares$year, shares$share, caption='Top 0.4% Share of Total Paid Finnish Taxes', ylim=c(0.04, 0.08), geom='line', ylab='Total Finnish Taxes Share Paid by Top 0.4%', xlab='Year')
+sharefigure + theme_bw(base_size = 13)
+
+
+
+# add 1 to taxes paid if it is zero
+clean$taxes_paid <- replace(clean$taxes_paid,clean$taxes_paid<=1, 1)
+
+# log transforming the income variables
+clean$log_taxes_paid <-log(clean$taxes_paid)
+clean$log_total_inc <- log(clean$total_inc)
+
+######## Scraping Macro Data
+
+# OECD: Tax Revenues 2009 - 2012
+# URL
+URL <- 'http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/REV/NES.1000.TAXNAT.FIN?startTime=2009&endTime=2012'
+sdmx <- readSDMX('http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/REV/NES.1000.TAXNAT.FIN?startTime=2009&endTime=2012')
+
+# Data Frame
+Tax09.12 <- as.data.frame(sdmx)
+
+# Making It Tidy
+drops <- c("GOV","TAX","TIME_FORMAT","Unit","PowerCode","VAR","COU")
+Tax09.12 <- Tax09.12[,!(names(Tax09.12) %in% drops)]
+
+as.numeric('obsTime', 'obsValue' )
+
+names(Tax09.12)[1] <- "year"
+names(Tax09.12)[2] <- "Total_Tax_Revenue"
+Tax09.12$year <- as.numeric(Tax09.12$year)
+Tax09.12$Total_Tax_Revenue <- as.numeric(Tax09.12$Total_Tax_Revenue)
+
+
+# Tax Revenues 2013
+Tax09.12$Total_Tax_Revenue <- Tax09.12$Total_Tax_Revenue*1000000000
+Tax13 <- data.frame(year=2013, Total_Tax_Revenue =30780000000)
+Tax09.13 <- rbind( Tax09.12, Tax13 )
+
+
+# GDP in constant prices, national base year
+Tax09.13$Total_GDP <- c(181664000000, 187100000000, 191910000000,189111000000,186831000000)
+
+# Tax Rates & Delta Tax Rates & GDP
+Tax09.13$Tax_Rate <- c(30.50, 30.00, 30.00, 29.75,31.75)
+
+Tax09.13$DELTA_Tax_Rate <- c(NA, 0.5, 0,-0.25,1.0)
+
+
+# Merge Our Scraped, Cleaned Data Sets
+FINAL <- merge(clean, Tax09.13,
+               by = c('year'))
+
+#### Gathering more data
+
+# OECD: Population Data 2009 - 2013
+# URL
+URL <- 'http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/POP_FIVE_HIST/FIN.YP99TLL1_ST.TT.A?startTime=2009&endTime=2013'
+sdmx <- readSDMX('http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/POP_FIVE_HIST/FIN.YP99TLL1_ST.TT.A?startTime=2009&endTime=2013')
+
+# Data Frame
+Pop09.13 <- as.data.frame(sdmx)
+
+# Making It Tidy
+drops <- c("LOCATION","SUBJECT","SEX","FREQUENCY","TIME_FORMAT","Unit","OBS_STATUS")
+Pop09.13 <- Pop09.13[,!(names(Pop09.13) %in% drops)]
+
+as.numeric('obsTime', 'obsValue' )
+
+names(Pop09.13)[1] <- "year"
+names(Pop09.13)[2] <- "Population"
+Pop09.13$year <- as.numeric(Pop09.13$year)
+Pop09.13$Population <- as.numeric(Pop09.13$Population)
+
+PercWorkPop <- c(0.6645439, 0.661943, 0.6570156, 0.6510898  , 0.6449715)
+year <- c(2009, 2010, 2011, 2012, 2013)
+WorkPop <- data.frame(year, PercWorkPop)
+
+Pop09.13 <- merge(WorkPop, Pop09.13,
+               by = c('year'))
+
+Pop09.13$WorkPop <- Pop09.13$PercWorkPop*Pop09.13$Population 
+
+drops <- c("PercWorkPop","Population")
+Pop09.13 <- Pop09.13[,!(names(Pop09.13) %in% drops)]
+
+
+# Merge Data Sets
+FINAL <- merge(FINAL, Pop09.13,
+               by = c('year'))
+
+# Create Year Dummies
+FINAL <- within(FINAL, yr2009<-ifelse(year==2009, 1, 0))
+FINAL <- within(FINAL, yr2010<-ifelse(year==2010, 1, 0))
+FINAL <- within(FINAL, yr2011<-ifelse(year==2011, 1, 0))
+FINAL <- within(FINAL, yr2012<-ifelse(year==2012, 1, 0))
+FINAL <- within(FINAL, yr2013<-ifelse(year==2013, 1, 0))
+
+# Create Dep Var
+#FINAL$total2009 <- with(FINAL, sum(FINAL[yr2009==1, "taxes_paid"]))
+#FINAL$total2010 <- with(FINAL, sum(FINAL[yr2010==1, "taxes_paid"])) 
+#FINAL$total2011 <- with(FINAL, sum(FINAL[yr2011==1, "taxes_paid"]))  
+#FINAL$total2012 <- with(FINAL, sum(FINAL[yr2012==1, "taxes_paid"])) 
+#FINAL$total2013 <- with(FINAL, sum(FINAL[yr2013==1, "taxes_paid"])) 
+
+#FINAL$share2009 <- FINAL$total2009/FINAL$Total_Tax_Revenue
+#FINAL$share2010 <- FINAL$total2010/FINAL$Total_Tax_Revenue 
+#FINAL$share2011 <- FINAL$total2011/FINAL$Total_Tax_Revenue 
+#FINAL$share2012 <- FINAL$total2012/FINAL$Total_Tax_Revenue 
+#FINAL$share2013 <- FINAL$total2013/FINAL$Total_Tax_Revenue 
+
+share <- c(0.04898281, 0.06022747, 0.06752648, 0.06347982, 0.0770184)
+year <- c(2009, 2010, 2011, 2012, 2013)
+shares <- data.frame(year, share)
+
+
+FINAL <- merge(FINAL, shares,
+               by = c('year'))
+
+save(FINAL, file = "/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/A3_Ott_Schneider/FINAL.RData")
+
+################
+#Descriptive Statistics
+################
+
+# createing subsets just for further analysis and ease of calculations
+FINAL2009 <- subset(FINAL, year == 2009)
+FINAL2010 <- subset(FINAL, year == 2010)
+FINAL2011 <- subset(FINAL, year == 2011)
+FINAL2012 <- subset(FINAL, year == 2012)
+FINAL2013 <- subset(FINAL, year == 2013)
+
+# number of observations by year
+obs <- tally(group_by(FINAL, year))
+
+# creating first summary statistics table
+sum2_table <- merge(obs, Pop09.13,
+                             by = c('year'))
+percent <- (obs$n / Pop09.13$WorkPop)*100
+percent_of_working <- data.frame(year, percent)
+
+sum2_table <- merge(sum2_table, percent_of_working,
+                    by = c('year'))
+sum2_table <- merge(sum2_table, Tax09.13,
+                    by = c('year'))
+# Caption not working?
+# This is our first table
+kable(sum2_table, align ='c', digits = c(4,5,7,2,12,13,4,3))
+
+# Creating our Second Summary Table
+obs_all <- tally(FINAL)
+mean_inc <- mean(FINAL$total_inc)
+mean_tax <- mean(FINAL$taxes_paid)
+mean_ratio <- mean(FINAL$ratio)
+med_inc <- median(FINAL$total_inc)
+med_tax <- median(FINAL$taxes_paid)
+med_ratio <- median(FINAL$ratio)
+sd_inc <- sd(FINAL$total_inc)
+sd_tax <- sd(FINAL$taxes_paid)
+sd_ratio <- sd(FINAL$ratio)
+
+tot_inc <- c(med_inc, mean_inc, sd_inc)
+tot_paid_taxes <- c(med_tax, mean_tax, sd_tax)
+ave_tax_rate <- c(med_ratio, mean_ratio, sd_ratio)
+
+# creating table labels
+table3 <- c('Median', 'Mean', 'SD')
+sum3_table <- data.frame(table3, tot_inc, tot_paid_taxes, ave_tax_rate)
+
+kable(sum3_table, align ='c', digits = c(0,4,4,1))
+#why won't this work: , caption = "Quick Summary Statistics on Tax Records Dataset N = 70402"
+
+#overall summary statistics
+summary(FINAL$taxes_paid)
+summary(FINAL$total_inc)
+summary(FINAL$ratio)
+summary(FINAL$log_taxes_paid)
+summary(FINAL$log_total_inc)
+
+#########
+# Figures
+#########
+
+# shows the average tax rate paid over the years, see that the range doesn't change all too much
+qplot(year, ratio, data=FINAL, main='Average Tax Rate Paid Across Years', ylab ='Average Tax Rate')
+
+# shows the income outliers in 2013; Q: should we drop them?
+qplot(year, total_inc, data=FINAL, main="Total Income by Year Highlighting 2013 Outliers", ylab = 'Total Annual Income')
+
+# plotting the density of the average tax rate
+d <- density(FINAL$ratio) # returns the density data 
+plot(d, main = 'Density Plot of Average Tax Rates') # plots the results
+
+# hist(FINAL$total_inc, main = '')
+# income looks slightly better after logging it
+hist(FINAL$log_total_inc, main = 'Histogram of Logged Total Income', xlab = 'Log Total Annual Income')
+
+# hist(FINAL$taxes_paid, main = '')
+# taxes paid looks slightly better after logging it
+hist(FINAL$log_taxes_paid, main = 'Histogram of Logged Total Taxes', xlab = 'Log Paid Taxes')
+
+# plotting income against tax rate
+qplot(ratio, log_total_inc, data=FINAL, ylab  = 'Log Total Annual Income', xlab ='Average Tax Rate', main = "Plot of Average Tax Rate Against Annual Total Income")
+qplot(ratio, log_total_inc, data=FINAL, xlim=c(0,31), ylab  = 'Log Total Annual Income', xlab ='Average Tax Rate', main = "Plot of Average Tax Rate < 31% Against Log Annual Total Incomes")
+
+# car::scatterplotMatrix(FINAL)
+
+# plotting
+
+sharefigure <- qplot(shares$year, shares$share, caption='Top 0.4% Share of Total Paid Finnish Taxes', ylim=c(0.04, 0.08), geom='line', ylab='Total Finnish Taxes Share Paid by Top 0.4%', xlab='Year')
+sharefigure + theme_bw(base_size = 13)
+
+##############
+# Inferential Statistics
+##############
+
+# our probit models....
+
+FINAL <- within(FINAL, less30<-ifelse(ratio<30, 1, 0))
+logit1 <- glm(less30 ~ log_total_inc, data = FINAL, family = 'binomial')
+summary(logit1)
+confint(logit1)
+fitted <- with(FINAL,data.frame(log_total_inc))
+fitted$predicted <- predict(logit1, newdata = fitted, type = 'response')
+qplot(fitted$predicted, log_total_inc, data = FINAL, xlab = 'Predicted Probability', ylab = 'Log Total Income', main='Predicted Probability Individual Would Have an Average Tax Rate Below 30' )
+
+FINAL <- within(FINAL, less25<-ifelse(ratio<25, 1, 0))
+logit2 <- glm(less25 ~ log_total_inc, data = FINAL, family = 'binomial')
+confint(logit2)
+
+fitted2 <- with(FINAL,data.frame(log_total_inc))
+fitted2$predicted2 <- predict(logit2, newdata = fitted2, type = 'response')
+qplot(fitted2$predicted2, log_total_inc, data = FINAL )
+
+logit3 <- glm(less30 ~ log_total_inc + Tax_Rate, data = FINAL, family = 'binomial')
+confint(logit3)
+
+fitted3 <- with(FINAL,data.frame(log_total_inc))
+fitted3$predicted3 <- predict(logit3, newdata = fitted3, type = 'response')
+qplot(fitted3$predicted3, log_total_inc, data = FINAL )
+
+# Causal Impact
+# will look into this at a later time 
+# pre.period <- c(2009, 2010, 2011, 2012)
+# post.period <- c(2013)
+# impact <- CausalImpact(FINAL, pre.period, post.period)
+
+## Our OLS model needs signficant improvement, is it even appropriate?
+
+M1 <- lm(share ~ Tax_Rate+ratio+DELTA_Tax_Rate+log(Total_GDP),data = FINAL)
+summary(M1)
+
+# Create cleaner covariate labels
+labels <- c('(Intercept)', 'Top tax rate', 'Change in top tax rate',
+            'Log total GDP')
+
+stargazer::stargazer(M1, covariate.labels = labels,
+                     title = 'Inappropriate Model, First Try',
+                     type = 'latex', header = FALSE)
+
+
+M2 <- lm(share ~ Tax_Rate+ratio+DELTA_Tax_Rate+Total_GDP+yr2009+yr2010+yr2011+yr2012+yr2013+DELTA_Tax_Rate*yr2009+DELTA_Tax_Rate*yr2010+DELTA_Tax_Rate*yr2011+DELTA_Tax_Rate*yr2012+DELTA_Tax_Rate*yr2013 ,data = FINAL)
+M3 <- lm(share ~ Tax_Rate+ratio+DELTA_Tax_Rate+log(Total_GDP),data = FINAL)
+M4 <- lm(share ~ Tax_Rate+ratio+DELTA_Tax_Rate+log(Total_GDP), year==2013, data = FINAL)
+summary(M4)
+M5 <- lm(share ~ Tax_Rate+ratio+DELTA_Tax_Rate+log(Total_GDP), year>=2012, data = FINAL)
+summary(M5)
