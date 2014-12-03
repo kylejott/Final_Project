@@ -79,11 +79,12 @@ clean <- plyr::rename(x = clean,
                                          "name7" = "rank",
                                          "ratio3" = "ratio"
                              ))
+# add 1 to taxes paid if it is zero to avoid problems
+clean$taxes_paid <- replace(clean$taxes_paid,clean$taxes_paid<=1, 1)
 
 ## now we have a clean and tidy dataset!
 
-
-## working on making this a panel dataset
+## making our panel dataset
 
 cleangroup <- group_by(clean, justname)
 unique(cleangroup$justname)
