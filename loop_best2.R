@@ -97,13 +97,11 @@ n_distinct(clean5obs$justname)
 clean5obs$id2 <- id(clean5obs[c("justname", "numberobs")], drop = FALSE)
 summary(clean5obs$id2)
 
-bins <- mutate(bins, quant1 = quantile(total_inc, 0.1))
-summarise(bins, median(quant1))
-bins <- mutate(bins, quant2 = quantile(total_inc, 0.2))
-summarise(bins, median(quant2))
-bins <- mutate(bins, quant = quantile(total_inc, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9))
+#saving panel dataset
+save(clean5obs, file = "/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/clean5obs.RData")
 
-## Creating graph like finnish top income paper
+
+## Creating graph, bin plot like finnish top income paper
 bins <- group_by(clean, year)
 
 bins1 <- subset(bins, total_inc <= quantile(total_inc, 0.1))
