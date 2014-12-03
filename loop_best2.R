@@ -18,6 +18,10 @@ library(knitr)
 library(CausalImpact)
 library(tidyr)
 library(reshape2)
+library(sandwich)
+library(lmtest)
+library(plm)
+
 
 setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
 load("all.RData")
@@ -81,6 +85,7 @@ clean <- plyr::rename(x = clean,
                              ))
 # add 1 to taxes paid if it is zero to avoid problems
 clean$taxes_paid <- replace(clean$taxes_paid,clean$taxes_paid<=1, 1)
+save(clean, file = "/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/clean.RData")
 
 ## now we have a clean and tidy dataset!
 
@@ -189,7 +194,17 @@ ggplot(data = binplots2, aes(x = variable,y = value, group=year)) +
 
 ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/binplot.pdf")
 
-  
+# figure on shares
+
+share <- c(0.04898281, 0.06022747, 0.06752648, 0.06347982, 0.0770184)
+year <- c(2009, 2010, 2011, 2012, 2013)
+shares <- data.frame(year, share)
+
+dev.off()
+sharefigure <- qplot(shares$year, shares$share, caption='Top 0.4% Share of Total Paid Finnish Taxes', ylim=c(0.04, 0.08), geom='line', ylab='Total Finnish Taxes Share Paid by Top 0.4%', xlab='Year')
+sharefigure + theme_bw(base_size = 13)
+
+ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/shareplot.pdf")
 
 
 

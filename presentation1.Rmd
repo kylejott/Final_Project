@@ -1,5 +1,5 @@
 ---
-title: "The Top 0.4% Income Earners in Finland: an Analysis of 2009 to 2013"
+title: "The Top 0.4% of Finland: an Analysis of Incomes and Tax Rates from 2009 to 2013"
 author: "Kyle Ott and Cornelius Schneider"
 date: "December 4, 2014"
 output: 
@@ -7,12 +7,15 @@ output:
     theme: solarized
     transition: fade
     highlight: default
+bibliography:
+- main1.bib
+- packages1.bib
 ---
 ```{r, include=FALSE}
 pkgs <- c('httr', 'dplyr', 'XML', 'ggplot2', 'stringr', 'car', 'devtools', 'rsdmx', 'stargazer', 'knitr', 'CausalImpact' )
 repmis::LoadandCite(pkgs, file = 'packages1.bib')
 
-
+setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
 
 ##################################
 # Presentation: Data Science Course
@@ -32,31 +35,77 @@ library(rsdmx)
 library(stargazer)
 library(knitr)
 library(CausalImpact)
-library(ggmap)
-library(raster)
+library(tidyr)
+library(reshape2)
+library(sandwich)
+library(lmtest)
+library(plm)
 ```
 
+## Introduction (1)
+<style type="text/css">
+p { text-align: left; }
+</style>
 
-## Introduction: Why Finland?
+“Optimal” income taxation is always discussed against the background of *classic economic theories*: 
 
+In a very recent work, @piketty2014inequality identify additional reasons why trends in top-income shares are correlated with the tax rates: 
 
-![Tax Scheme Since 01/01/2010 (figure created by authors)](4countrymap.png)
+- labor responses
+- evasion/avoidance responses
+- and bargaining responses. 
 
-## Our data
+<br>
+The current debate still lacks information about the top of the income distribution.
 
-this finish website hosts the top income earners and their tax rates:
+Our paper’s purpose is to identify anomalies in the tax patterns of ultra-wealthy Finnish people.
 
-<http://publicdata.eu/>
+## 
 
+![(figure created by authors)](Figures/shareplot.png)
+
+## Introduction (3): Why Finland?
+
+![(figure created by authors)](Figures/4countrymap.png)
+
+## Our data (1)
+
+![Tax Scheme Since 01/01/2010](Figures/newspaper2.png)
+@taloussanomat
+
+## Our data (2)
+
+- 70,402 observations (N = ~15,000 ; T = 5)
+
+- Scraped all five years: 2009 to 2013
+
+- Created time series dataset
+
+- Created panel dataset using names as unique id's (N = 4867)
+
+- Variables
+
+    + Name
+ 
+    + Total Income
+ 
+    + Total Taxes Paid
+ 
+    + Average Tax Rate
+    
+    + Rank
+ 
 ## Research Question
-<br>
-<br>
-<br>
+
+
 - Bullet 1
 - Bullet 2
 - Bullet 3
 
-## Figures
+## 
+
+![(figure created by authors)](Figures/binplot.png)
+
 
 ## Initial Findings
 
