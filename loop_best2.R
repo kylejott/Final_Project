@@ -183,7 +183,7 @@ binplots2$year <- as.character(binplots2$year)
 ggplot(data = binplots2, aes(x = variable,y = value, group=year)) +
           geom_line(aes(color = year)) + theme_bw(base_size = 13) +
           xlab("\nDecile Bin") +
-          ylab("Average Tax Rate\n") +
+          ylab("Average Tax Rate (%)\n") +
           ggtitle("Average Tax Rate by Deciles\n") +
           scale_colour_brewer(palette="Set1")
 
