@@ -16,12 +16,10 @@ library(rsdmx)
 library(stargazer)
 library(knitr)
 library(CausalImpact)
-library(tidyr)
-library(reshape2)
 
-setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
-load("all.RData")
-
+#################
+# Our Unique, Tidy, Open, Reproducible Data 
+#################
 
 class(all$year)
 
@@ -82,6 +80,31 @@ clean <- plyr::rename(x = clean,
 
 ## now we have a clean and tidy dataset!
 
+###creating net-of-tax
+
+clean["net_of_tax"] <- 1-(clean$ratio/100)
+
+clean2 <- group_by(clean, year)
+clean <- mutate(clean2, avg_inc=mean(total_inc))
+summary(clean$avg_inc)
+
+# without time trend
+M1 <- lm(log(avg_inc) ~ log(net_of_tax),data = clean)
+summary(M1)
+
+# including time trend
+M2 <- lm(log(avg_inc) ~ log(net_of_tax)+year,data = clean)
+summary(M2)
+
+# Create Year Dummies
+clean <- within(clean, yr2009<-ifelse(year==2009, 1, 0))
+clean <- within(clean, yr2010<-ifelse(year==2010, 1, 0))
+clean <- within(clean, yr2011<-ifelse(year==2011, 1, 0))
+clean <- within(clean, yr2012<-ifelse(year==2012, 1, 0))
+clean <- within(clean, yr2013<-ifelse(year==2013, 1, 0))
+
+M3 <- lm(log(avg_inc) ~ log(net_of_tax)+yr2009+yr2010+yr2011+yr2012+yr2013,data = clean)
+summary(M3)
 
 ## working on making this a panel dataset
 
@@ -92,106 +115,10 @@ clean <- mutate(cleangroup, numberobs = n())
 clean5obs <- filter(clean, numberobs == 5)
 head(clean5obs)
 clean5obs <- arrange(clean5obs, desc(justname))
-n_distinct(clean5obs$justname)
+clean5obs <- mutate(cleanobs, )
 
 clean5obs$id2 <- id(clean5obs[c("justname", "numberobs")], drop = FALSE)
 summary(clean5obs$id2)
-
-bins <- mutate(bins, quant1 = quantile(total_inc, 0.1))
-summarise(bins, median(quant1))
-bins <- mutate(bins, quant2 = quantile(total_inc, 0.2))
-summarise(bins, median(quant2))
-bins <- mutate(bins, quant = quantile(total_inc, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9))
-
-## Creating graph like finnish top income paper
-bins <- group_by(clean, year)
-
-bins1 <- subset(bins, total_inc <= quantile(total_inc, 0.1))
-binplot1 <- mutate(bins1, avetax1 = mean(ratio))
-binplot1a <- summarise(binplot1, median(avetax1))
-
-bins2 <- subset(bins, total_inc <= quantile(total_inc, 0.2))
-binplot2 <- mutate(bins2, avetax2 = mean(ratio))
-binplot2a <- summarise(binplot2, median(avetax2))
-
-binplots <- merge(binplot1a, binplot2a,
-               by = c('year'))
-
-bins3 <- subset(bins, total_inc <= quantile(total_inc, 0.3))
-binplot3 <- mutate(bins3, avetax3 = mean(ratio))
-binplot3a <- summarise(binplot3, median(avetax3))
-
-binplots <- merge(binplots, binplot3a,
-                  by = c('year'))
-                  
-bins4 <- subset(bins, total_inc <= quantile(total_inc, 0.4))
-binplot4 <- mutate(bins4, avetax4 = mean(ratio))
-binplot4a <- summarise(binplot4, median(avetax4))
-
-binplots <- merge(binplots, binplot4a,
-                  by = c('year'))
-bins5 <- subset(bins, total_inc <= quantile(total_inc, 0.5))
-binplot5 <- mutate(bins5, avetax5 = mean(ratio))
-binplot5a <- summarise(binplot5, median(avetax5))
-
-binplots <- merge(binplots, binplot5a,
-                  by = c('year'))
-bins6 <- subset(bins, total_inc <= quantile(total_inc, 0.6))
-binplot6 <- mutate(bins6, avetax6 = mean(ratio))
-binplot6a <- summarise(binplot6, median(avetax6))
-
-binplots <- merge(binplots, binplot6a,
-                  by = c('year'))
-bins7 <- subset(bins, total_inc <= quantile(total_inc, 0.7))
-binplot7 <- mutate(bins7, avetax7 = mean(ratio))
-binplot7a <- summarise(binplot7, median(avetax7))
-
-binplots <- merge(binplots, binplot7a,
-                  by = c('year'))
-bins8 <- subset(bins, total_inc <= quantile(total_inc, 0.8))
-binplot8 <- mutate(bins8, avetax8 = mean(ratio))
-binplot8a <- summarise(binplot8, median(avetax8))
-
-binplots <- merge(binplots, binplot8a,
-                  by = c('year'))
-bins9 <- subset(bins, total_inc <= quantile(total_inc, 0.9))
-binplot9 <- mutate(bins9, avetax9 = mean(ratio))
-binplot9a <- summarise(binplot9, median(avetax9))
-
-binplots <- merge(binplots, binplot9a,
-                  by = c('year'))
-
-## melting and plotting the bins
-
-binplots <- plyr::rename(x = binplots,
-                      replace = c("median(avetax1)" = "1",
-                                  "median(avetax2)" = "2",
-                                  "median(avetax3)" = "3",
-                                  "median(avetax4)" = "4",
-                                  "median(avetax5)" = "5",
-                                  "median(avetax6)" = "6",
-                                  "median(avetax7)" = "7",
-                                  "median(avetax8)" = "8",
-                                  "median(avetax9)" = "9"
-                      ))
-
-binplots2 <- melt(binplots, id=c("year"))
-binplots2 <- group_by(binplots2, year)
-
-binplots2$year <- as.character(binplots2$year)
-
-ggplot(data = binplots2, aes(x = variable,y = value, group=year)) +
-          geom_line(aes(color = year)) + theme_bw(base_size = 13) +
-          xlab("\nDecile Bin") +
-          ylab("Average Tax Rate\n") +
-          ggtitle("Average Tax Rate by Deciles\n") +
-          scale_colour_brewer(palette="Set1")
-
-ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/binplot.pdf")
-
-  
-
-
 
 
 
