@@ -97,17 +97,35 @@ Our paper’s purpose is to identify anomalies in the tax patterns of ultra-weal
  
 ## Research Question
 
+What is the responsiveness of reported taxable income to changes in average tax rates?
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+- Our research is motivated by the framework laid down by @gruber2002elasticity, @saez2004reported, and @giertz2007elasticity.
+
+- @gruber2002elasticity and @giertz2007elasticity uses panel data to observe income elasticities. @saez2004reported uses aggregated time series.
+
+- All of these papers look to observe long-term behavoiral elasticities, but given our dataset, we are only looking for short-term elasticies.
 
 ## 
 
 ![(figure created by authors)](Figures/binplot.png)
 
 
-## Initial Findings
+
+## Key Findings
+```{r, inlcude=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
+load("cleaned.RData")
+M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = cleaned)
+M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year,data = cleaned)
+# Create cleaner covariate labels
+labels <- c('(Intercept)', 'Elasticity')
+```
+
+```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
+stargazer::stargazer(M1, M2, covariate.labels = labels,
+                     title = 'Inappropriate Model, First Try',
+                     type = 'latex', header = FALSE)
+```
 
 ## References
 

@@ -192,7 +192,7 @@ ggplot(data = binplots2, aes(x = variable,y = value, group=year)) +
           ggtitle("Average Tax Rate by Deciles\n") +
           scale_colour_brewer(palette="Set1")
 
-ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/binplot.pdf")
+ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/binplot.png")
 
 # figure on shares
 
@@ -204,7 +204,7 @@ dev.off()
 sharefigure <- qplot(shares$year, shares$share, caption='Top 0.4% Share of Total Paid Finnish Taxes', ylim=c(0.04, 0.08), geom='line', ylab='Total Finnish Taxes Share Paid by Top 0.4%', xlab='Year')
 sharefigure + theme_bw(base_size = 13)
 
-ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/shareplot.pdf")
+ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/shareplot.png")
 
 
 
