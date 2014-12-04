@@ -91,8 +91,7 @@ Our paper’s purpose is to identify anomalies in the tax patterns of ultra-weal
     
     + Rank
 
-## 
-
+## Share of tax revenue paid by top 0.4%
 ![(figure created by authors)](Figures/shareplot.png)
 
 ##
@@ -137,7 +136,14 @@ Limitations:
 - Only short-term elasticities (not long term)
 - Lacking variables: marginal tax rates, controlling for other kinds of income, demographic controls, and marital status control
 <br>
+
+
 Further research needed!
+
+- Panel fixed effects model
+- Further robustness checks
+- Comparison to other Scandinavian countries
+- Investigating our counterintuitive result
 
 ## References
 

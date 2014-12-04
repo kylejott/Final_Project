@@ -4,15 +4,6 @@ author: "Ott and Schneider"
 date: "December 4, 2014"
 output: pdf_document
 ---
----
-title: "Untitled"
-author: "Ott and Schneider"
-date: "December 4, 2014"
-output: pdf_document
----
-
-## Key Findings
-
 ```{r, inlcude=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
 library(httr)
 library(dplyr)
@@ -86,16 +77,12 @@ ols1 <- lm(log(dep) ~ log(indep), data=panelmodel3)
 summary(ols1)
 confint(ols1)
 
-fixed.dum <-lm(dep ~ indep + factor(id2) - 1, data=panelmodel3)
-summary(fixed.dum)
-confint(fixed.dum)
-
 # Create cleaner covariate labels
 labels <- c('Elasticity')
 ```
 
 ```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
-stargazer::stargazer(ols1, fixed.dum, covariate.labels = labels,
+stargazer::stargazer(ols1, covariate.labels = labels,
                      title = 'Panel Elasticities',
                      type = 'latex', header = FALSE)
 ```

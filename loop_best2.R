@@ -231,6 +231,7 @@ m2 + geom_density(aes(colour=year2)) +
   theme_bw(base_size = 13) +
   xlab("\nLog Total Income (Euros)") +
   ylab("Count\n") +
+  xlim(8,18)+
   ggtitle("Observation Count of Log Total Income by Year\n")
 
 ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/incomecount.png")
