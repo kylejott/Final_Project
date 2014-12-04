@@ -1,0 +1,100 @@
+---
+title: "Untitled"
+author: "Ott and Schneider"
+date: "December 4, 2014"
+output: pdf_document
+---
+---
+title: "Untitled"
+author: "Ott and Schneider"
+date: "December 4, 2014"
+output: pdf_document
+---
+
+## Key Findings
+
+```{r, inlcude=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+library(httr)
+library(dplyr)
+library(XML)
+library(ggplot2)
+library(stringr)
+library(car)
+library(devtools)
+library(rsdmx)
+library(stargazer)
+library(knitr)
+library(CausalImpact)
+library(sandwich)
+library(lmtest)
+library(plm)
+
+setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
+
+load("clean5obs.RData")
+
+panel <- clean5obs
+
+panel <- mutate(panel, t11 = ifelse(year == 2011, total_inc, 0))
+panel <- mutate(panel, t11 = max(t11))
+panel <- mutate(panel, t12 = ifelse(year == 2012, total_inc, 0))
+panel <- mutate(panel, t12 = max(t12))
+panel <- mutate(panel, t13 = ifelse(year == 2013, total_inc, 0))
+panel <- mutate(panel, t13 = max(t13))
+
+panel <- mutate(panel, dep1 = t11/total_inc)
+panel <- mutate(panel, dep2 = t12/total_inc)
+panel <- mutate(panel, dep3 = t13/total_inc)
+
+panel <- mutate(panel, dep1a = ifelse(year == 2009, dep1, 1))
+panel <- mutate(panel, dep2a = ifelse(year == 2010, dep2, 1))
+panel <- mutate(panel, dep3a = ifelse(year == 2011, dep3, 1))
+
+panel <- mutate(panel, dep = dep1a*dep2a*dep3a)
+
+
+panel <- mutate(panel, tax11 = ifelse(year == 2011, net_of_tax, 1))
+panel <- mutate(panel, tax11 = max(tax11))
+panel <- mutate(panel, tax12 = ifelse(year == 2012, net_of_tax, 1))
+panel <- mutate(panel, tax12 = max(tax12))
+panel <- mutate(panel, tax13 = ifelse(year == 2013, net_of_tax, 1))
+panel <- mutate(panel, tax13 = max(tax13))
+
+panel <- mutate(panel, indep1 = tax11/net_of_tax)
+panel <- mutate(panel, indep2 = tax12/net_of_tax)
+panel <- mutate(panel, indep3 = tax13/net_of_tax)
+
+panel <- mutate(panel, indep1a = ifelse(year == 2009, indep1, 1))
+panel <- mutate(panel, indep2a = ifelse(year == 2010, indep2, 1))
+panel <- mutate(panel, indep3a = ifelse(year == 2011, indep3, 1))
+
+panel <- mutate(panel, indep = indep1a*indep2a*indep3a)
+
+panelmodel2 <- panel[!(panel$year==2012 | panel$year==2013),]
+
+bad <- filter(panelmodel2, dep == 0 | indep == 0)
+bad <- filter(panelmodel2, id2==141 | id2==934 | id2==2263)
+# dropping the observations with errors due to data collection methods
+
+panelmodel3 <- panelmodel2[!(panelmodel2$id2==141 | panelmodel2$id2==934 | panelmodel2$id2==2263),]
+
+                  
+#OLS
+ols1 <- lm(log(dep) ~ log(indep), data=panelmodel3)
+summary(ols1)
+confint(ols1)
+
+fixed.dum <-lm(dep ~ indep + factor(id2) - 1, data=panelmodel3)
+fixed.dum2 <- fixed.dum[c(1,2),]
+summary(fixed.dum$indep)
+confint(fixed.dum)
+
+# Create cleaner covariate labels
+labels <- c('Elasticity')
+```
+
+```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
+stargazer::stargazer(ols1, fixed.dum covariate.labels = labels,
+                     title = 'Panel Elasticities',
+                     type = 'latex', header = FALSE)
+```

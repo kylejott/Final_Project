@@ -35,8 +35,20 @@ clean2 <- group_by(clean, year)
 clean <- mutate(clean2, avg_inc=mean(total_inc))
 summary(clean$avg_inc)
 
+# Create Year Dummies
+clean <- within(clean, yr2009<-ifelse(year==2009, 1, 0))
+clean <- within(clean, yr2010<-ifelse(year==2010, 1, 0))
+clean <- within(clean, yr2011<-ifelse(year==2011, 1, 0))
+clean <- within(clean, yr2012<-ifelse(year==2012, 1, 0))
+clean <- within(clean, yr2013<-ifelse(year==2013, 1, 0))
+
+cleaned <- clean
+
+save(cleaned, file = "/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/cleaned.RData")
+
+
 # without time trend
-M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = clean)
+M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = cleaned)
 summary(M1)
 confint(M1)
 # Durbin-Watson test for autocorrelation
@@ -45,7 +57,7 @@ dwt(M1)
 coeftest(M1,vcov=NeweyWest)
 
 # including time trend
-M2 <- lm(log(avg_inc) ~ log(net_of_tax)+year,data = clean)
+M2 <- lm(log(avg_inc) ~ log(net_of_tax)+year, data = cleaned)
 summary(M2)
 confint(M2)
 # Durbin-Watson test for autocorrelation
@@ -53,14 +65,7 @@ dwt(M2)
 # we have strong autocorr, so we use newey-west SE's
 coeftest(M2,vcov=NeweyWest)
 
-# Create Year Dummies
-clean <- within(clean, yr2009<-ifelse(year==2009, 1, 0))
-clean <- within(clean, yr2010<-ifelse(year==2010, 1, 0))
-clean <- within(clean, yr2011<-ifelse(year==2011, 1, 0))
-clean <- within(clean, yr2012<-ifelse(year==2012, 1, 0))
-clean <- within(clean, yr2013<-ifelse(year==2013, 1, 0))
-
-M3 <- lm(log(avg_inc) ~ log(net_of_tax)+yr2009+yr2010+yr2011+yr2012+yr2013,data = clean)
+M3 <- lm(log(avg_inc) ~ log(net_of_tax)+yr2009+yr2010+yr2011+yr2012+yr2013,data = cleaned)
 summary(M3)
 confint(M3)
 # Durbin-Watson test for autocorrelation
@@ -123,7 +128,7 @@ bad <- filter(panelmodel2, id2==141 | id2==934 | id2==2263)
 
 panelmodel3 <- panelmodel2[!(panelmodel2$id2==141 | panelmodel2$id2==934 | panelmodel2$id2==2263),]
 
-coplot(dep ~ year|id2, type="l", data=panelmodel2) 
+# coplot(dep ~ year|id2, type="l", data=panelmodel2) 
                   
 #OLS
 ols1 <- lm(log(dep) ~ log(indep), data=panelmodel3)

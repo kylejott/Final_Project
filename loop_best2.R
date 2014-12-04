@@ -209,4 +209,31 @@ ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/sharepl
 
 
 
+# shows the average tax rate paid over the years, see that the range doesn't change all too much
+
+clean$year2 <- as.character(clean$year)
+m <- ggplot(clean, aes(x = ratio, y= ..count.., group=year2))
+m + geom_density(aes(colour=year2)) +
+  scale_colour_brewer(palette="Set1") +
+  theme_bw(base_size = 13) +
+  xlab("\nAverage Tax Rate (%)") +
+  ylab("Count\n") +
+  ggtitle("Observation Counts of Average Tax Rate by Year\n")
+
+ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/avetaxcount.png")
+
+
+# shows the total income
+
+m2 <- ggplot(clean, aes(x = log(taxes_paid), y= ..count.., group=year2))
+m2 + geom_density(aes(colour=year2)) +
+  scale_colour_brewer(palette="Set1") +
+  theme_bw(base_size = 13) +
+  xlab("\nTotal Income (Euros)") +
+  ylab("Count\n") +
+  ggtitle("Observation Count of Total Income by Year\n")
+
+ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/incomecount.png")
+
+
 

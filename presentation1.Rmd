@@ -12,7 +12,7 @@ bibliography:
 - packages1.bib
 ---
 ```{r, include=FALSE}
-pkgs <- c('httr', 'dplyr', 'XML', 'ggplot2', 'stringr', 'car', 'devtools', 'rsdmx', 'stargazer', 'knitr', 'CausalImpact' )
+pkgs <- c('httr', 'dplyr', 'XML', 'ggplot2', 'stringr', 'car', 'devtools', 'rsdmx', 'stargazer', 'knitr', 'CausalImpact', 'tidyr', 'reshape2', 'sandwich', 'lmtest', 'plm')
 repmis::LoadandCite(pkgs, file = 'packages1.bib')
 
 setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
@@ -70,7 +70,7 @@ Our paper’s purpose is to identify anomalies in the tax patterns of ultra-weal
 
 ## Our data (1)
 
-![Tax Scheme Since 01/01/2010](Figures/newspaper2.png)
+![(figure created by authors)](Figures/newspaper2.png)
 @taloussanomat
 
 ## Our data (2)
@@ -94,6 +94,14 @@ Our paper’s purpose is to identify anomalies in the tax patterns of ultra-weal
     + Average Tax Rate
     
     + Rank
+    
+##
+
+![(figure created by authors)](Figures/avetaxcount.png)
+
+##
+
+![(figure created by authors)](Figures/incomecount.png)
  
 ## Research Question
 
@@ -109,23 +117,19 @@ What is the responsiveness of reported taxable income to changes in average tax 
 
 ![(figure created by authors)](Figures/binplot.png)
 
+## Key Findings (1)
 
+![(figure created by authors)](Figures/timeseries1.png)
 
-## Key Findings
-```{r, inlcude=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
-setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
-load("cleaned.RData")
-M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = cleaned)
-M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year,data = cleaned)
-# Create cleaner covariate labels
-labels <- c('(Intercept)', 'Elasticity')
-```
+## Key Findings (2)
 
-```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
-stargazer::stargazer(M1, M2, covariate.labels = labels,
-                     title = 'Inappropriate Model, First Try',
-                     type = 'latex', header = FALSE)
-```
+![(figure created by authors)](Figures/panel1.png)
+
+## Conclusion
+
+Limitations
+
+Further research
 
 ## References
 
