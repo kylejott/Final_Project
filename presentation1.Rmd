@@ -60,11 +60,7 @@ The current debate still lacks information about the top of the income distribut
 
 Our paper’s purpose is to identify anomalies in the tax patterns of ultra-wealthy Finnish people.
 
-## 
-
-![(figure created by authors)](Figures/shareplot.png)
-
-## Introduction (3): Why Finland?
+## Introduction (2): Why Finland?
 
 ![(figure created by authors)](Figures/4countrymap.png)
 
@@ -94,7 +90,11 @@ Our paper’s purpose is to identify anomalies in the tax patterns of ultra-weal
     + Average Tax Rate
     
     + Rank
-    
+
+## 
+
+![(figure created by authors)](Figures/shareplot.png)
+
 ##
 
 ![(figure created by authors)](Figures/avetaxcount.png)
@@ -109,27 +109,35 @@ What is the responsiveness of reported taxable income to changes in average tax 
 
 - Our research is motivated by the framework laid down by @gruber2002elasticity, @saez2004reported, and @giertz2007elasticity.
 
-- @gruber2002elasticity and @giertz2007elasticity uses panel data to observe income elasticities. @saez2004reported uses aggregated time series.
+- @gruber2002elasticity and @giertz2007elasticity uses **panel data** to observe income elasticities. @saez2004reported uses **aggregated time series**.
 
-- All of these papers look to observe long-term behavoiral elasticities, but given our dataset, we are only looking for short-term elasticies.
+- All of these papers look to observe long-term behavoiral elasticities, but given our dataset, we are only looking for **short-term** elasticies.
 
-## 
+## Average tax rates in decile means
+![(figure created by authors)](Figures/binplot.png) 
 
-![(figure created by authors)](Figures/binplot.png)
+<br>
+(inspired by @riihela2010trends)
 
 ## Key Findings (1)
 
 ![(figure created by authors)](Figures/timeseries1.png)
 
 ## Key Findings (2)
-
 ![(figure created by authors)](Figures/panel1.png)
+![(figure created by authors)](Figures/model3.png)
+
+
+Model from @giertz2007elasticity
 
 ## Conclusion
+Limitations:
 
-Limitations
-
-Further research
+- Limited expressiveness of average tax rates
+- Only short-term elasticities (not long term)
+- Lacking variables: marginal tax rates, controlling for other kinds of income, demographic controls, and marital status control
+<br>
+Further research needed!
 
 ## References
 
