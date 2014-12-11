@@ -61,11 +61,12 @@ The current debate still lacks information about the top of the income distribut
 Our paper’s purpose is to identify anomalies in the tax patterns of ultra-wealthy Finnish people.
 
 ## Introduction (2): Why Finland?
+[//]: This figure was creating using CartoDB, here is the link: http://cdb.io/1yVDOcv
 
 ![(figure created by authors)](Figures/4countrymap.png)
 
 ## Our data (1)
-
+[//]: This is a screenshot from the taloussanaomat website
 ![(figure created by authors)](Figures/newspaper2.png)
 @taloussanomat
 
@@ -92,14 +93,15 @@ Our paper’s purpose is to identify anomalies in the tax patterns of ultra-weal
     + Rank
 
 ## Share of tax revenue paid by top 0.4%
+[//]: creating using loop_best2.R
 ![(figure created by authors)](Figures/shareplot.png)
 
 ##
-
+[//]: creating using loop_best2.R
 ![(figure created by authors)](Figures/avetaxcount.png)
 
 ##
-
+[//]: creating using loop_best2.R
 ![(figure created by authors)](Figures/incomecount.png)
  
 ## Research Question
@@ -113,16 +115,18 @@ What is the responsiveness of reported taxable income to changes in average tax 
 - All of these papers look to observe long-term behavoiral elasticities, but given our dataset, we are only looking for **short-term** elasticies.
 
 ## Average tax rates in decile means
+[//]: creating using loop_best2.R
 ![(figure created by authors)](Figures/binplot.png) 
 
 <br>
 (inspired by @riihela2010trends)
 
 ## Key Findings (1)
-
+[//]: creating using inferential_stats.R, red box added using Preview
 ![(figure created by authors)](Figures/timeseries1.png)
 
 ## Key Findings (2)
+[//]: creating using inferential_stats.R, red box added using Preview
 ![(figure created by authors)](Figures/panel1.png)
 ![(figure created by authors)](Figures/model3.png)
 

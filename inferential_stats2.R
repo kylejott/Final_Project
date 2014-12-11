@@ -53,8 +53,9 @@ summary(M1)
 confint(M1)
 # Durbin-Watson test for autocorrelation
 dwt(M1)
-# we have strong autocorr, so we use newey-west SE's
-M1a <- coeftest(M1,vcov=NeweyWest)
+# we have autocorr, so it is adviseable to use newey-west SE's
+coeftest(M1,vcov=NeweyWest)
+
 
 # including time trend
 M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year, data = cleaned)
@@ -62,7 +63,7 @@ summary(M2)
 confint(M2)
 # Durbin-Watson test for autocorrelation
 dwt(M2)
-# we have strong autocorr, so we use newey-west SE's
+# we have autocorr, so it is adviseable to use newey-west SE's
 coeftest(M2,vcov=NeweyWest)
 NeweyWest(M2)
 
@@ -138,6 +139,8 @@ bad <- filter(panelmodel2, id2==141 | id2==934 | id2==2263 | id2==1342 | id2==18
 # dropping the observations with errors due to data tables from website
 
 panelmodel3 <- panelmodel2[!(panelmodel2$id2==141 | panelmodel2$id2==934 | panelmodel2$id2==2263 | panelmodel2$id2==1342 | panelmodel2$id2==1827 | panelmodel2$id2==2535),]
+save(panelmodel3, file = "/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/panelmodel3.RData")
+
 
 # coplot(dep ~ year|id2, type="l", data=panelmodel2) 
                   
@@ -154,7 +157,7 @@ panelmodel3$id2 <- as.character(panelmodel3$id2)
 
 # Fixed
 
-fixed <- plm(dep ~ indep, data=panelmodel3, index=c("justname", "year"), model="within")
+fixed <- plm(log(dep) ~ log(indep), data=panelmodel3, index=c("justname", "year"), model="within")
 summary(fixed)
 confint(fixed)
 # Testing for fixed effects, null: OLS better than fixed
@@ -169,5 +172,5 @@ pbgtest(fixed)
 # yes serial correlation?
 
 # testing for heterosk, BP test
-bptest(dep ~ indep + factor(justname), data = panelmodel3, studentize=F)
+bptest(log(dep) ~ log(indep) + factor(justname), data = panelmodel3, studentize=F)
 
