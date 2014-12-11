@@ -25,15 +25,18 @@ library(plm)
 
 setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
 load("cleaned.RData")
-M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = cleaned)
-M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year,data = cleaned)
-M3 <- lm(log(avg_inc) ~ log(net_of_tax)+yr2009+yr2010+yr2011+yr2012+yr2013,data = cleaned)
+M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = cleaned, na.action = NULL)
+# we have strong autocorr, so we use newey-west SE's
+M1a <- coeftest(M1,vcov=NeweyWest)
+M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year,data = cleaned, na.action = NULL)
 # Create cleaner covariate labels
 labels <- c('Elasticity', 'Time Trend')
 ```
 
 ```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
-stargazer::stargazer(M1, M2, covariate.labels = labels,
+stargazer::stargazer(M1a, M2, covariate.labels = labels,
+                     model.names = FALSE,
+                     dep.var.labels.include = FALSE,
                      title = 'Time Series Elasticities',
                      type = 'latex', header = FALSE)
 ```

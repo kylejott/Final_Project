@@ -57,15 +57,16 @@ dwt(M1)
 coeftest(M1,vcov=NeweyWest)
 
 # including time trend
-M2 <- lm(log(avg_inc) ~ log(net_of_tax)+year, data = cleaned)
+M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year, data = cleaned)
 summary(M2)
 confint(M2)
 # Durbin-Watson test for autocorrelation
 dwt(M2)
 # we have strong autocorr, so we use newey-west SE's
 coeftest(M2,vcov=NeweyWest)
+NeweyWest(M2)
 
-M3 <- lm(log(avg_inc) ~ log(net_of_tax)+yr2009+yr2010+yr2011+yr2012+yr2013,data = cleaned)
+M3 <- lm(log(avg_inc) ~ log(net_of_tax)+yr2009+yr2010+yr2011+yr2012+yr2013, data = cleaned)
 summary(M3)
 confint(M3)
 # Durbin-Watson test for autocorrelation
@@ -122,11 +123,21 @@ panel <- mutate(panel, indep = indep1a*indep2a*indep3a)
 
 panelmodel2 <- panel[!(panel$year==2012 | panel$year==2013),]
 
-bad <- filter(panelmodel2, dep == 0 | indep == 0)
-bad <- filter(panelmodel2, id2==141 | id2==934 | id2==2263)
-# dropping the observations with errors due to data collection methods
+#duplicates?
+dup <- panelmodel2[c("justname", "year")]
+duplicated(dup)
+# we have 3 duplicates 
+nodup <- dup[!duplicated(dup[c("justname", "year")]),]
+# these are the three duplicates
+dup2 <- dup[duplicated(dup[c("justname", "year")]),]
 
-panelmodel3 <- panelmodel2[!(panelmodel2$id2==141 | panelmodel2$id2==934 | panelmodel2$id2==2263),]
+bad <- filter(panelmodel2, dep == 0 | indep == 0)
+# 3 additional id's are bad because of strange data, we should not get 0, it's impossible
+bad <- filter(panelmodel2, id2==141 | id2==934 | id2==2263 | id2==1342 | id2==1827 | id2==2535)
+
+# dropping the observations with errors due to data tables from website
+
+panelmodel3 <- panelmodel2[!(panelmodel2$id2==141 | panelmodel2$id2==934 | panelmodel2$id2==2263 | panelmodel2$id2==1342 | panelmodel2$id2==1827 | panelmodel2$id2==2535),]
 
 # coplot(dep ~ year|id2, type="l", data=panelmodel2) 
                   
@@ -134,13 +145,27 @@ panelmodel3 <- panelmodel2[!(panelmodel2$id2==141 | panelmodel2$id2==934 | panel
 ols1 <- lm(log(dep) ~ log(indep), data=panelmodel3)
 summary(ols1)
 confint(ols1)
+# Durbin-Watson test for autocorrelation
+dwt(ols1)
+# we do not have strong autocorr
 
-#Fixed
+panelmodel3$id2 <- as.character(panelmodel3$id2)
+# still can't get the panel to run using id2, using justname from now on
+
+# Fixed
+
 fixed <- plm(dep ~ indep, data=panelmodel3, index=c("justname", "year"), model="within")
-unique(panelmodel3$id2)
+summary(fixed)
+confint(fixed)
+# Testing for fixed effects, null: OLS better than fixed
+pFtest(fixed, ols1) 
 
-fixed.dum <-lm(dep ~ indep + factor(id2) - 1, data=panelmodel3)
-fixed.dum2 <- fixed.dum[c(1,2),]
-summary(fixed.dum$indep)
-confint(fixed.dum)
-  
+#BP LM test of cross-sectional dependence
+pcdtest(fixed, test = c("lm"))
+
+# testing for serial correlation
+pbgtest(fixed)
+
+# testing for heterosk, BP test
+bptest(dep ~ independent + factor(justname), data = panelmodel3, studentize=F)
+

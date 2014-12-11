@@ -21,6 +21,7 @@ library(reshape2)
 library(sandwich)
 library(lmtest)
 library(plm)
+library(Zelig)
 
 
 setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
@@ -195,6 +196,18 @@ ggplot(data = binplots2, aes(x = variable,y = value, group=year)) +
 ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/binplot.png")
 
 # figure on shares
+# clean$total2009 <- with(clean, sum(clean[yr2009==1, "taxes_paid"]))
+# clean$total2010 <- with(clean, sum(clean[yr2010==1, "taxes_paid"])) 
+# clean$total2011 <- with(clean, sum(clean[yr2011==1, "taxes_paid"]))  
+# clean$total2012 <- with(clean, sum(clean[yr2012==1, "taxes_paid"])) 
+# clean$total2013 <- with(clean, sum(clean[yr2013==1, "taxes_paid"])) 
+
+# clean$share2009 <- clean$total2009/clean$Total_Tax_Revenue
+# clean$share2010 <- clean$total2010/clean$Total_Tax_Revenue 
+# clean$share2011 <- clean$total2011/clean$Total_Tax_Revenue 
+# clean$share2012 <- clean$total2012/clean$Total_Tax_Revenue 
+# clean$share2013 <- clean$total2013/clean$Total_Tax_Revenue 
+# since we only have 5 datapoints, easier to graph manually...
 
 share <- c(0.04898281, 0.06022747, 0.06752648, 0.06347982, 0.0770184)
 year <- c(2009, 2010, 2011, 2012, 2013)
