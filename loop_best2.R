@@ -90,6 +90,28 @@ save(clean, file = "/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/cle
 
 ## now we have a clean and tidy dataset!
 
+## preparing time series dataset
+
+###creating net-of-tax
+
+clean["net_of_tax"] <- 1-(clean$ratio/100)
+
+clean2 <- group_by(clean, year)
+clean <- mutate(clean, avg_inc=mean(total_inc))
+summary(clean$avg_inc)
+
+# Create Year Dummies
+clean <- within(clean, yr2009<-ifelse(year==2009, 1, 0))
+clean <- within(clean, yr2010<-ifelse(year==2010, 1, 0))
+clean <- within(clean, yr2011<-ifelse(year==2011, 1, 0))
+clean <- within(clean, yr2012<-ifelse(year==2012, 1, 0))
+clean <- within(clean, yr2013<-ifelse(year==2013, 1, 0))
+
+#cleaned is the dataset we will use for time series analysis
+cleaned <- clean
+save(cleaned, file = "/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/cleaned.RData")
+
+
 ## making our panel dataset
 
 cleangroup <- group_by(clean, justname)

@@ -25,26 +25,47 @@ library(plm)
 #################
 
 setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
-load("clean.RData")
+load("cleaned.RData")
 
-###creating net-of-tax
+# Creating Summary Stats of Time Series
+cleaned2 <- group_by(cleaned, year)
 
-clean["net_of_tax"] <- 1-(clean$ratio/100)
 
-clean2 <- group_by(clean, year)
-clean <- mutate(clean2, avg_inc=mean(total_inc))
-summary(clean$avg_inc)
+obs_all <- tally(cleaned2)
+t1_totinc <- summarise(cleaned2, mean1=mean(total_inc),median1=median(total_inc), sd1=sd(total_inc))
+t1_tottax <- summarise(cleaned2, mean2=mean(taxes_paid),median2=median(taxes_paid), sd2=sd(taxes_paid))
+t1_rat <- summarise(cleaned2, mean3=mean(ratio),median3=median(ratio), sd3=sd(ratio))
 
-# Create Year Dummies
-clean <- within(clean, yr2009<-ifelse(year==2009, 1, 0))
-clean <- within(clean, yr2010<-ifelse(year==2010, 1, 0))
-clean <- within(clean, yr2011<-ifelse(year==2011, 1, 0))
-clean <- within(clean, yr2012<-ifelse(year==2012, 1, 0))
-clean <- within(clean, yr2013<-ifelse(year==2013, 1, 0))
+t1a <- merge(obs_all, t1_totinc,
+                  by = c('year'))
+t1b <- merge(t1a, t1_tottax,
+             by = c('year'))
+t1c <- merge(t1b, t1_rat,
+             by = c('year'))
 
-cleaned <- clean
+obs_all_sum <- tally(cleaned)
+t1_totinc_sum <- summarise(cleaned, mean1=mean(total_inc),median1=median(total_inc), sd1=sd(total_inc))
+t1_tottax_sum <- summarise(cleaned, mean2=mean(taxes_paid),median2=median(taxes_paid), sd2=sd(taxes_paid))
+t1_rat_sum <- summarise(cleaned, mean3=mean(ratio),median3=median(ratio), sd3=sd(ratio))
 
-save(cleaned, file = "/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/cleaned.RData")
+obs_all_sum$year <- c('sum')
+t1_totinc_sum$year <- c('sum')
+t1_tottax_sum$year <- c('sum')
+t1_rat_sum$year <- c('sum')
+
+t1a_sum <- merge(obs_all_sum, t1_totinc_sum,
+             by = c('year'))
+t1b_sum <- merge(t1a_sum, t1_tottax_sum,
+             by = c('year'))
+t1c_sum <- merge(t1b_sum, t1_rat_sum,
+             by = c('year'))
+
+summarytableTS <- rbind(t1c, t1c_sum)
+
+knitr::kable(summarytableTS, align ='c', digits = 0, format='latex', 
+             col.names=c("Year", "N", "Mean Income (Euros)", "Median Income (Euros)", "SD of Income (Euros)",
+                         "Mean Tax Paid (Euros)", "Median Tax Paid (Euros)", "SD of Tax Paid (Euros)",
+                         "Mean Ave Tax Rate (%)", "Median Ave Tax Rate (%)", "SD of Ave Tax Rate (%)"))
 
 
 # without time trend
@@ -66,17 +87,6 @@ dwt(M2)
 # we have autocorr, so it is adviseable to use newey-west SE's
 coeftest(M2,vcov=NeweyWest)
 NeweyWest(M2)
-
-M3 <- lm(log(avg_inc) ~ log(net_of_tax)+yr2009+yr2010+yr2011+yr2012+yr2013, data = cleaned)
-summary(M3)
-confint(M3)
-# Durbin-Watson test for autocorrelation
-dwt(M3)
-# we have strong autocorr, so we use newey-west SE's
-coeftest(M3,vcov=NeweyWest)
-
-## make a table of our results
-
 
 
 #################
@@ -142,6 +152,7 @@ panelmodel3 <- panelmodel2[!(panelmodel2$id2==141 | panelmodel2$id2==934 | panel
 save(panelmodel3, file = "/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/panelmodel3.RData")
 
 
+
 # coplot(dep ~ year|id2, type="l", data=panelmodel2) 
                   
 #OLS
@@ -160,6 +171,8 @@ panelmodel3$id2 <- as.character(panelmodel3$id2)
 fixed <- plm(log(dep) ~ log(indep), data=panelmodel3, index=c("justname", "year"), model="within")
 summary(fixed)
 confint(fixed)
+
+
 # Testing for fixed effects, null: OLS better than fixed
 pFtest(fixed, ols1) 
 
