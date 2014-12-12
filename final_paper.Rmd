@@ -93,9 +93,9 @@ Against the background that this paper’s subject of interest is Finland, it is
 # Our Unique, Tidy, Open, Reproducible Dataset
 
 The Nordic countries of Finland, Sweden and Norway have a tradition of publishing everyone’s income and tax details every year. Whereas in Sweden and Norway this data is only accessible to citizens and after pulling an official request, in Finland top income tax earners are public figures as a result of heightened media scrutiny on top income tax earners. Finland’s largest business online daily newspaper @taloussanomat published the figures in a suitable format for our purpose: The top 15,000 income earners over the age of 18 are displayed on yearly basis from 2009 to 2013, including their name, total income (income, profits, and capital gains), taxed paid and average tax rate.
-In a first step we scraped the data from their [dedicated website](http://www.taloussanomat.fi/verotiedot/2009/suurituloisimmat/). Since there are some observations missing in the first three years (2009 to 2011), the final data set contains 70,402 observations. The variables given by our scraped data are as follows: full name, total income (in euros), total taxes paid (in euros), average tax rate (in percent), and the tax year. We also created a couple of new variables that are helpful for our analysis: the rank based on the income of each individual in a given year and the share of total income-revenues that the top 15,000 tax payers pay. Furthermore, we created two different datasets for analysis, a time-series and a panel-dataset (more in the methodology) section. The panel dataset using the given names of the taxpayers as unique id’s and we are able to track 4,867 individuals across all 5 years.
+In a first step we scraped the data from their [dedicated website](http://www.taloussanomat.fi/verotiedot/2009/suurituloisimmat/). Since there are some observations missing in the first three years (2009 to 2011), the final data set contains 70,402 observations. The variables given by our scraped data are as follows: full name, total income (in euros), total taxes paid (in euros), average tax rate (in percent), and the tax year. We also created a couple of new variables that are helpful for our analysis: the rank based on the income of each individual in a given year and the share of total income-revenues that the top 15,000 tax payers pay. Furthermore, we created two different datasets for analysis, a time-series and a panel-dataset (more in the methodology) section. The panel dataset uses the given names of the taxpayers as unique identifiers and therefore we are able to track 4,867 individuals across all 5 years.
 
-In order to derive an estimate of the share of the population that our top-tailed income earners comprise, we looked at data from @oecdstatspopulation to determine the working population in a given year in Finland (in 2009 it was  3,547,335 growing to 3,508,645 by 2013). From this we divided the number of observations in our dataset in a given year by the working population in given year. Thus, we arrive at a dataset consisting of the top 0.4% income earners in Finland each year (make this a footnote: note that for 2009 there are missing observations, so the total observations is low resulting in a population share of 0.34%). Moreover, we are able to track the development of the share of the total income tax revenue paid by the top 0.4 percent over our time period. In the figure below, the share increases from 5 percent to almost 8 percent over the course of five years. In each year we can nicely observe the changes in the top income tax rate changes which likely resulted in the reflected changes in tax revenue collected by the top 0.4 percent. Most importantly for our analysis, from this graph we can clearly see a start shift in the share from 2012 to 2013 (the year of the tax reform). This provides simple, yet powerful graphical analysis in our attempt to flesh out latent underpinnings in taxpayers behavior given our dataset.
+In order to derive an estimate of the share of the population that our top-tailed income earners comprise, we looked at data from @oecdstatspopulation to determine the working population in a given year in Finland (in 2009 it was 3,547,335 and shrinking to 3,508,645 by 2013). From this we divided the number of observations in our dataset in a given year by the working population in given year. Thus, we arrive at a dataset consisting of the top 0.4% income earners in Finland each year (make this a footnote: note that for 2009 there are missing observations, so the total observations is low resulting in a population share of 0.34%). Moreover, we are able to track the development of the share of the total income tax revenue paid by the top 0.4 percent over our time period. In the figure below, the share increases from 5 percent to almost 8 percent over the course of five years. In each year we can nicely observe the changes in the top income tax rate changes which likely resulted in the reflected changes in tax revenue collected by the top 0.4 percent. Most importantly for our analysis, from this graph we can clearly see a start shift in the share from 2012 to 2013 (the year of the tax reform). This provides simple, yet powerful graphical analysis in our attempt to flesh out latent underpinnings in taxpayers behavior given our dataset.
 
 ```{r, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
 # figure on shares
@@ -299,12 +299,29 @@ ggplot(data = binplots2, aes(x = variable,y = value, group=year)) +
           scale_colour_brewer(palette="Set1")
 ```
 
-
-
-
 #Methodology
 
+The methodology in this paper is in general derived by the literature described above, but especially using the methodological framework of @saez2004reported for a time-series model and @giertz2007elasticity for a panel analysis. Since both approaches are quite relevant in the latest literature and we were not sure how sensitive our data is to the respective model, we decided to include both models in our paper. Due to data constraints, we had to adjust these models slightly suiting our capabilities, explained in the following paragraph. 
+
+In our **time-series model** we simply regress the log of average income for the top 15,000 Finnish income earners on the log of the average *net-of-tax rate* in percent over the given time period 2009-2013 (5 observations). Whereas the *net-of-tax rate* depicts the rate of total income after taxes (net-of-tax rate = 1 - average tax). 
+@saez2004reported wrote about his model: “A simple OLS regression of log average incomes on the log of the net-of-tax rate, always displays insignificant elasticity coefficients. Therefore, the aggregate data display no evidence of significant behavioral responses of reported incomes relative to changes in the average marginal tax rate” (p. 138). Thus, in order to control for exogenous real income growth, we also added a time control capturing year-specific effects. 
+
+For our **panel analysis** we used exactly the model laid down by @giertz2007elasticity, exploiting the panel advantage comparing only individuals who filed their tax returns in all subsequent years and also were part of the top 15,000 income earners from 2009 to 2013. In detail, here we are observing 4,867 individuals. The dependent variable in this model is the log of total income in the future year (*income t+2*) divided by income in the base year (*income t*), where the future year is two years after the base year. Thus, we end up observing three pairs of years (2009/2011, 2010/2012, 2011/2013).
+The key independent variable is the log of the average net-of-tax rate in the future year (t+2) divided by the average net-of-tax rate in the base year (t). We use these time-differences in our variables to avoid endogeneity between the tax rate and income. 
+
+![(Source: Giertz 2007)](Figures/model3.png)
+(Image Source: @giertz2007elasticity)
+
+Our panel-model differs from the original as such, that we use two instead of three future years for the sake of an additional year pair. Moreover, @giertz2007elasticity used several control variables like *marital status* that we are not able to obtain due to data constraints. 
+
+Again we run two different versions of this model, first simple pooled OLS, but due to the presence of unobserved, time invariant effect also a within estimation (fixed effects). One of the most limiting constraints of this project is the limited time-span available relatively to previous research, which entirely focuses on long-term behavioral elasticities. Here we are only able to observe short term elasticities. Moreover, we are limited to only one income group, namely the top-tax bracket. Consequences of those limitations will be discussed in the *Discussion* section. 
+
+
 #Results
+
+## Time Series Results
+Regressing the time series model without time control provides an ETI of -0.035, highly significant at the 1% level (with a confidence interval between -0.040 and -0.029). Interestingly the sign of this effect changes, when including the time control (consistent with the literature). Moreover, the effect dampens to an ETI of 0.009, which is still significant at the 1% level (with a confidence interval between 0.003 and 0.014). In detail, this yields that a 1% increase in average tax rate would lead to an 0.009% increase in reported taxable income, ceteris paribus. The time trend which is meant to capture all exogenous income growth is also significant at the 1% level and increases the adjusted R squared from 0.002 to 0.246.  
+
 
 ```{r, inlcude=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
 load("cleaned.RData")
@@ -319,8 +336,6 @@ M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year,data = cleaned, na.action = NULL)
 labels <- c('Elasticity', 'Time Trend')
 ```
 
-Time Series Results 
-
 ```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
 stargazer::stargazer(M1, M2, covariate.labels = labels,
                      title = 'Time Series Elasticities',
@@ -329,7 +344,9 @@ stargazer::stargazer(M1, M2, covariate.labels = labels,
                      type = 'latex', header = FALSE)
 ```
 
-Panel Result
+## Panel Results
+
+
 
 ```{r, inlcude=FALSE, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
 
@@ -370,7 +387,6 @@ fixed <- plm(log(dep) ~ log(indep), data=panelmodel3, index=c("justname", "year"
 labels2 <- c('Elasticity')
 ```
 
-
 ```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
 stargazer::stargazer(ols1, fixed, covariate.labels = labels2,
                      title = 'Panel Elasticities',
@@ -380,6 +396,14 @@ stargazer::stargazer(ols1, fixed, covariate.labels = labels2,
 ```
 
 #Discussion
+
+## Data Issues
+
+## Statistical Issues
+
+## Issues in Context
+
+
 
 #Conclusion
 
