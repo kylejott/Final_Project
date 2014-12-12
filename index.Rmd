@@ -114,7 +114,9 @@ knitr::kable(summarytableTS, align ='c', digits = 0, format='html',
                          "Ave Tax", "Med Tax"))
 ```
 
-![(figure created by authors)](Figures/shareplot_web.png)
+<img src="https://github.com/kylejott/Final_Project/blob/gh-pages/Figures/shareplot_web.png" width="800px" height="800px" />
+
+
 
 
 
