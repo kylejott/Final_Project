@@ -114,9 +114,79 @@ knitr::kable(summarytableTS, align ='c', digits = 0, format='html',
                          "Ave Tax", "Med Tax"))
 ```
 
-<img src="https://github.com/kylejott/Final_Project/blob/gh-pages/Figures/shareplot_web.png" width="800px" height="800px" />
+```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
+
+clean$year2 <- as.character(clean$year)
+m <- ggplot(clean, aes(x = ratio, y= ..count.., group=year2))
+m + geom_density(aes(colour=year2)) +
+  scale_colour_brewer(palette="Set1") +
+  theme_bw(base_size = 13) +
+  xlab("\nAverage Tax Rate (%)") +
+  ylab("Count\n") +
+  ggtitle("Observation Counts of Average Tax Rate by Year\n")
+```
 
 
+Plotting income against the average tax rates
+```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
+qplot(ratio, total_inc, data=clean, ylab  = 'Total Annual Income',
+      xlab ='Average Tax Rate', ylim=c(150000,1000000),
+      main = "Average Tax Rate and Total Income up to 1,000,000 euros") + theme_bw(base_size = 13)
+```
+```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
+#plot of midding range incomes
+qplot(ratio, total_inc, data=clean, ylab  = 'Total Annual Income',
+      xlab ='Average Tax Rate', ylim=c(1000000,5000000),
+      main = "Average Tax Rate and Total Income from 1 mil. to 5 mil. euros") + theme_bw(base_size = 13)
+```
+```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
+#plot of top incomes
+qplot(ratio, total_inc, data=clean, ylab  = 'Total Annual Income',
+      xlab ='Average Tax Rate', ylim=c(5000000, 175000000),
+      main = "Average Tax Rate and Total Income from 5 mil. to 175 mil euros") + theme_bw(base_size = 13)
+```
+
+```{r, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+# figure on shares
+# clean$total2009 <- with(clean, sum(clean[yr2009==1, "taxes_paid"]))
+# clean$total2010 <- with(clean, sum(clean[yr2010==1, "taxes_paid"])) 
+# clean$total2011 <- with(clean, sum(clean[yr2011==1, "taxes_paid"]))  
+# clean$total2012 <- with(clean, sum(clean[yr2012==1, "taxes_paid"])) 
+# clean$total2013 <- with(clean, sum(clean[yr2013==1, "taxes_paid"])) 
+
+# clean$share2009 <- clean$total2009/clean$Total_Tax_Revenue
+# clean$share2010 <- clean$total2010/clean$Total_Tax_Revenue 
+# clean$share2011 <- clean$total2011/clean$Total_Tax_Revenue 
+# clean$share2012 <- clean$total2012/clean$Total_Tax_Revenue 
+# clean$share2013 <- clean$total2013/clean$Total_Tax_Revenue 
+# since we only have 5 datapoints, easier to graph manually...
+
+share <- c(0.04898281, 0.06022747, 0.06752648, 0.06347982, 0.0770184)
+year <- c(2009, 2010, 2011, 2012, 2013)
+shares <- data.frame(year, share)
+
+dev.off()
+```
+```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
+qplot(shares$year, shares$share, caption='\n Top 0.4% Share of Total Paid Finnish Taxes', ylim=c(0.04, 0.08), geom='line', ylab='Total Finnish Taxes Share Paid by Top 0.4%\n', xlab='\nYear', 
+                     main = 'Share of Total Paid Taxes') + theme_bw(base_size = 13) 
+```
+
+
+
+
+
+```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
+clean$year2 <- as.character(clean$year)
+m2 <- ggplot(clean, aes(x = log(taxes_paid), y= ..count.., group=year2))
+m2 + geom_density(aes(colour=year2)) +
+  scale_colour_brewer(palette="Set1") +
+  theme_bw(base_size = 13) +
+  xlab("\nLog Total Income (Euros)") +
+  ylab("Count\n") +
+  xlim(8,18)+
+  ggtitle("Observation Count of Log Total Income by Year\n")
+```
 
 
 
