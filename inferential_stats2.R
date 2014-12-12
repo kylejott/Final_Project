@@ -66,9 +66,8 @@ knitr::kable(summarytableTS, align ='c', digits = 0, format='latex',
                          "Mean Tax Paid (Euros)", "Median Tax Paid (Euros)", "SD of Tax Paid (Euros)",
                          "Mean Ave Tax Rate (%)", "Median Ave Tax Rate (%)", "SD of Ave Tax Rate (%)"))
 
-load("timeseries.RData")
 # without time trend
-M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = timeseries)
+M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = cleaned)
 summary(M1)
 confint(M1)
 # Durbin-Watson test for autocorrelation
@@ -78,7 +77,7 @@ coeftest(M1,vcov=NeweyWest)
 
 
 # including time trend
-M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year, data = timeseries)
+M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year, data = cleaned)
 summary(M2)
 confint(M2)
 # Durbin-Watson test for autocorrelation

@@ -94,10 +94,12 @@ t1b <- merge(t1a, t1_tottax,
 t1c <- merge(t1b, t1_rat,
              by = c('year'))
 
-obs_all_sum <- tally(cleaned)
-t1_totinc_sum <- summarise(cleaned, mean1=mean(total_inc),median1=median(total_inc))
-t1_tottax_sum <- summarise(cleaned, mean2=mean(taxes_paid),median2=median(taxes_paid))
-t1_rat_sum <- summarise(cleaned, mean3=mean(ratio),median3=median(ratio))
+load("clean.RData")
+
+obs_all_sum <- tally(clean)
+t1_totinc_sum <- summarise(clean, mean1=mean(total_inc),median1=median(total_inc))
+t1_tottax_sum <- summarise(clean, mean2=mean(taxes_paid),median2=median(taxes_paid))
+t1_rat_sum <- summarise(clean, mean3=mean(ratio),median3=median(ratio))
 
 obs_all_sum$year <- c('All')
 t1_totinc_sum$year <- c('All')
@@ -124,7 +126,7 @@ knitr::kable(summarytableTS, align ='c', digits = 0, format='latex',
 ```
 
 ```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
-load("clean.RData")
+
 clean$year2 <- as.character(clean$year)
 m <- ggplot(clean, aes(x = ratio, y= ..count.., group=year2))
 m + geom_density(aes(colour=year2)) +
@@ -243,12 +245,12 @@ ggplot(data = binplots2, aes(x = variable,y = value, group=year)) +
 #Results
 
 ```{r, inlcude=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
-load("timeseries.RData")
-M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = timeseries, na.action = NULL)
+load("cleaned.RData")
+M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = cleaned, na.action = NULL)
 # we have strong autocorr, so we use newey-west SE's
 # M1a <- coeftest(M1,vcov=NeweyWest)
 # stargazer only prints newey west results of coeff and SE only, no other info
-M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year,data = timeseries, na.action = NULL)
+M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year,data = cleaned, na.action = NULL)
 # due to problems with martix calculations, we cannot run newey west SW for M2
 # therefore, we will argue that our coefficients are right, but the SE will be different
 # Create cleaner covariate labels
