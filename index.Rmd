@@ -33,14 +33,10 @@ library(reshape2)
 library(sandwich)
 library(lmtest)
 library(plm)
-
+#dataset created by authors and scraped from website as explained below
 load("cleaned.RData")
 
 ```
-
-## Welcome to our website!
-
-
 
 <br>
 
@@ -192,6 +188,7 @@ m2 + geom_density(aes(colour=year2)) +
 
 ## Final Thoughts 
 
+We are inspired by the work of top tax economists that has been spearheaded by Thomas Piketty who is behind the *World Top Income Database* which is found [here](http://topincomes.parisschoolofeconomics.eu/). We encourage you to take a look at this website if you are interested in the very limited amount (but very important) work underway on understanding behovoiral changes of top income earners.
 
-Our conc   
+Thanks for reading our website!
 
