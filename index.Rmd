@@ -50,7 +50,7 @@ load("cleaned.RData")
 
 
 <br>
-We have reached out to *Taloussanomat*, but have not heard back from them for official comment. **Our purpose for doing this is for academic purposes**, of which we have written a paper entitled *The Top (0.4%) Tail of Finland: A Tale of Incomes, Tax Rates, and Elasticities from 2009 to 2013* which you can find a pdf version [here](https://github.com/kylejott/Final_Project/blob/master/final_paper.pdf).  
+We have reached out to *Taloussanomat*, but have not heard back from them for official comment. **Our purpose for doing this project is for academic purposes**, of which we have written a paper entitled *The Top (0.4%) Tail of Finland: A Tale of Incomes, Tax Rates, and Elasticities from 2009 to 2013* which you can find a pdf version [here](https://github.com/kylejott/Final_Project/blob/master/final_paper.pdf).  
 
 
 <br>
@@ -60,11 +60,11 @@ We have reached out to *Taloussanomat*, but have not heard back from them for of
 
 ## Data Overview
 
-In a first step we [scraped the data](https://github.com/kylejott/Final_Project/blob/master/data_scraping.R) from the *Taloussanomat* [dedicated website](http://www.taloussanomat.fi/verotiedot/2009/suurituloisimmat/).   
+In a first step, we [scraped the data](https://github.com/kylejott/Final_Project/blob/master/data_scraping.R) from the *Taloussanomat* [dedicated website](http://www.taloussanomat.fi/verotiedot/2009/suurituloisimmat/).   
 <br>
 
 
-The variables given by our scraped data are as follows: full name, total income (in euros), total taxes paid (in euros), average tax rate (in percent), and the tax year. Note that the lowest income observed is 150,002 euros while the highest is 170,127,542 euros. The following table provides a quick overview:
+The variables given by our scraped data are as follows: full name, total income (in euros), total taxes paid (in euros), average tax rate (in percent), and the tax year. Note that the lowest income observed in our data is 150,002 euros while the highest is 170,127,542 euros. The following table provides a quick overview:
 
 ```{r echo =FALSE, cache=FALSE, include=TRUE, results='asis', warning=FALSE, error=FALSE, message=FALSE}
 
