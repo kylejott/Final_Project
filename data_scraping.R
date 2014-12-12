@@ -1,7 +1,7 @@
 ##################################
 # Assignment 3: Data Science Course
 # Kyle Ott & Cornelius Schneider
-# 14 November 2014
+# 12 December 2014
 ##################################
 
 ## This do file scrapes the data from the Finnish Newspaper Website
@@ -22,7 +22,7 @@ library(tidyr)
 library(reshape2)
 
 
-
+# set your local directory
 setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
 
 
@@ -156,6 +156,7 @@ tables2009$year <- 2009
 #appending scraped tables
 all <- rbind(tables2009, tables2010, tables2011, tables2012, tables2013)
 
+# this dataset is used to start loop_best2.R
 save(all, file = all.RData")
 
 

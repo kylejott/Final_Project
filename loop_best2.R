@@ -1,7 +1,7 @@
 ##################################
-# Assignment 3: Data Science Course
+# Data Science Course
 # Kyle Ott & Cornelius Schneider
-# 14 November 2014
+# 12 December 2014
 ##################################
 
 # Load packages
@@ -23,8 +23,9 @@ library(lmtest)
 library(plm)
 library(Zelig)
 
-
+# set your local directory
 setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
+# comes from data_scraping.R
 load("all.RData")
 
 
@@ -86,16 +87,20 @@ clean <- plyr::rename(x = clean,
                              ))
 # add 1 to taxes paid if it is zero to avoid problems
 clean$taxes_paid <- replace(clean$taxes_paid,clean$taxes_paid<=1, 1)
+
+# creating our clean dataset that will be used for plotting
 save(clean, file = "clean.RData")
 
 ## now we have a clean and tidy dataset!
 
-## preparing time series dataset
 
+## preparing time series dataset
 ###creating net-of-tax
 
+# independent variable in TS analysis
 clean["net_of_tax"] <- 1-(clean$ratio/100)
 
+# grouping by year
 clean2 <- group_by(clean, year)
 cleaned <- mutate(clean2, avg_inc=mean(total_inc))
 summary(cleaned$avg_inc)
@@ -108,16 +113,19 @@ cleaned <- within(cleaned, yr2012<-ifelse(year==2012, 1, 0))
 cleaned <- within(cleaned, yr2013<-ifelse(year==2013, 1, 0))
 
 #cleaned is the dataset we will use for time series analysis
-
 save(cleaned, file = "cleaned.RData")
 
 
 ## making our panel dataset
 
+# grouping by the unique key of a person's name
 cleangroup <- group_by(clean, justname)
 unique(cleangroup$justname)
 
+# here we are also creating a panel id in order to keep only those
+# who we observe for all five years
 clean <- mutate(cleangroup, numberobs = n())
+# keeping only those that appear 5 times
 clean5obs <- filter(clean, numberobs == 5)
 head(clean5obs)
 clean5obs <- arrange(clean5obs, desc(justname))
@@ -131,7 +139,7 @@ save(clean5obs, file = "/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project
 
 
 
-## Creating graph, bin plo like finnish top income paper
+## Creating graph, bin plot like finnish top income paper
 bins <- group_by(clean, year)
 
 bins1 <- subset(bins, total_inc <= quantile(total_inc, 0.1))
@@ -229,7 +237,7 @@ ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/binplot
 # clean$share2011 <- clean$total2011/clean$Total_Tax_Revenue 
 # clean$share2012 <- clean$total2012/clean$Total_Tax_Revenue 
 # clean$share2013 <- clean$total2013/clean$Total_Tax_Revenue 
-# since we only have 5 datapoints, easier to graph manually...
+# since we only have 5 datapoints, easier to graph manually
 
 share <- c(0.04898281, 0.06022747, 0.06752648, 0.06347982, 0.0770184)
 year <- c(2009, 2010, 2011, 2012, 2013)
@@ -240,8 +248,6 @@ sharefigure <- qplot(shares$year, shares$share, caption='Top 0.4% Share of Total
 sharefigure + theme_bw(base_size = 13)
 
 ggsave("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/Figures/shareplot.png")
-
-
 
 
 # shows the average tax rate paid over the years, see that the range doesn't change all too much
