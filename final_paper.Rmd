@@ -243,12 +243,12 @@ ggplot(data = binplots2, aes(x = variable,y = value, group=year)) +
 #Results
 
 ```{r, inlcude=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
-
-M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = cleaned, na.action = NULL)
+load("timeseries.RData")
+M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = timeseries, na.action = NULL)
 # we have strong autocorr, so we use newey-west SE's
 # M1a <- coeftest(M1,vcov=NeweyWest)
 # stargazer only prints newey west results of coeff and SE only, no other info
-M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year,data = cleaned, na.action = NULL)
+M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year,data = timeseries, na.action = NULL)
 # due to problems with martix calculations, we cannot run newey west SW for M2
 # therefore, we will argue that our coefficients are right, but the SE will be different
 # Create cleaner covariate labels
@@ -311,7 +311,7 @@ Why does the summary show up?
 ```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
 stargazer::stargazer(ols1, fixed, covariate.labels = labels2,
                      title = 'Panel Elasticities',
-                     column.labels = c("Pooled OLS", "Within Estimator"),
+                     column.labels = NULL,
                      dep.var.labels = c("Log of Average Taxable Income"),
                      type = 'latex', header = FALSE)
 ```

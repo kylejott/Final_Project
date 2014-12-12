@@ -86,7 +86,7 @@ clean <- plyr::rename(x = clean,
                              ))
 # add 1 to taxes paid if it is zero to avoid problems
 clean$taxes_paid <- replace(clean$taxes_paid,clean$taxes_paid<=1, 1)
-save(clean, file = "/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/clean.RData")
+save(clean, file = "clean.RData")
 
 ## now we have a clean and tidy dataset!
 
@@ -97,7 +97,7 @@ save(clean, file = "/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/cle
 clean["net_of_tax"] <- 1-(clean$ratio/100)
 
 clean2 <- group_by(clean, year)
-clean <- mutate(clean, avg_inc=mean(total_inc))
+clean <- mutate(clean2, avg_inc=mean(total_inc))
 summary(clean$avg_inc)
 
 # Create Year Dummies
@@ -108,8 +108,8 @@ clean <- within(clean, yr2012<-ifelse(year==2012, 1, 0))
 clean <- within(clean, yr2013<-ifelse(year==2013, 1, 0))
 
 #cleaned is the dataset we will use for time series analysis
-cleaned <- clean
-save(cleaned, file = "/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/cleaned.RData")
+timeseries <- clean
+save(timeseries, file = "timeseries.RData")
 
 
 ## making our panel dataset

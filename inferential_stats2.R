@@ -43,7 +43,6 @@ t1b <- merge(t1a, t1_tottax,
 t1c <- merge(t1b, t1_rat,
              by = c('year'))
 
-obs_all_sum <- tally(cleaned)
 t1_totinc_sum <- summarise(cleaned, mean1=mean(total_inc),median1=median(total_inc), sd1=sd(total_inc))
 t1_tottax_sum <- summarise(cleaned, mean2=mean(taxes_paid),median2=median(taxes_paid), sd2=sd(taxes_paid))
 t1_rat_sum <- summarise(cleaned, mean3=mean(ratio),median3=median(ratio), sd3=sd(ratio))
@@ -67,9 +66,9 @@ knitr::kable(summarytableTS, align ='c', digits = 0, format='latex',
                          "Mean Tax Paid (Euros)", "Median Tax Paid (Euros)", "SD of Tax Paid (Euros)",
                          "Mean Ave Tax Rate (%)", "Median Ave Tax Rate (%)", "SD of Ave Tax Rate (%)"))
 
-
+load("timeseries.RData")
 # without time trend
-M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = cleaned, na.action = NULL)
+M1 <- lm(log(avg_inc) ~ log(net_of_tax), data = timeseries)
 summary(M1)
 confint(M1)
 # Durbin-Watson test for autocorrelation
@@ -79,7 +78,7 @@ coeftest(M1,vcov=NeweyWest)
 
 
 # including time trend
-M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year, data = cleaned)
+M2 <- lm(log(avg_inc) ~ log(net_of_tax) + year, data = timeseries)
 summary(M2)
 confint(M2)
 # Durbin-Watson test for autocorrelation
