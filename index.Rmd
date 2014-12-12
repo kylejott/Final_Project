@@ -1,5 +1,5 @@
 ---
-title: 'The Top 0.4% of Finland: an Analysis of Incomes and Tax Rates from 2009 to 2013'
+title: 'The Top 0.4% Income Earners in Finland from 2009 to 2013'
 author: "Kyle Ott and Cornelius Schneider"
 date: "December 12, 2014"
 output: html_document
@@ -8,7 +8,10 @@ output: html_document
 <br>
 
 ### Welcome to Our Website 
-Text about our project and data 
+Data is from Finnish finance daily, called [Taloussanomat](http://www.taloussanomat.fi/).
+We have scraped the data that they have [published](http://www.taloussanomat.fi/verotiedot/2009/suurituloisimmat/). Here is a screenshot of the website with the tax information for the year 2010:
+
+![(figure created by authors)](Figures/newspaper2.png)
 
 <br>
 
