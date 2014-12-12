@@ -112,6 +112,10 @@ knitr::kable(summarytableTS, align ='c', digits = 0, format='html',
                          "Ave Tax", "Med Tax"))
 ```
 
+
+Below you will see a plot showing the counts of the average tax rates paid by the ultra-wealthy. As you might expect, most pay a very high rate.
+
+
 ```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
 
 clean$year2 <- as.character(clean$year)
@@ -123,9 +127,14 @@ m + geom_density(aes(colour=year2)) +
   ylab("Count\n") +
   ggtitle("Observation Counts of Average Tax Rate by Year\n")
 ```
+  
 
 
-Below you will see a plot showing the counts of the average tax rates paid by the ultra-wealthy. As you might expect, most pay a very high rate.  
+The next three plots can be thought of as being stacked on top of each other as they break the top income earners into three income tiers (the lower, middle, and upper).
+
+The first graph plots the average tax rate paid against an individual's total a annual taxable income.
+The next plot looks at incomes between 1 million and 5 million euros.
+The third plot looks at incomes greater than 5 million euros.
 
 
 
@@ -135,12 +144,6 @@ qplot(ratio, total_inc, data=clean, ylab  = 'Total Annual Income',
       main = "Average Tax Rate and Total Income up to 1,000,000 euros") + theme_bw(base_size = 13)
 ```
 
-
-The next three plots can be thought of as being stacked on top of each other as they break the top income earners into three income tiers (the lower, middle, and upper).
-
-The first graph plots the average tax rate paid against an individual's total a annual taxable income.
-The next plot looks at incomes between 1 million and 5 million euros.
-The third plot looks at incomes greater than 5 million euros.
 
 ```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
 #plot of midding range incomes
@@ -156,7 +159,7 @@ qplot(ratio, total_inc, data=clean, ylab  = 'Total Annual Income',
 ```
 
 
-This plot shows how over time the amount in terms of share that the top income earners have paid in relation to the total amount of taxes contributed by Finnish nationals. As of 2013, the top 0.4% contribute 0.8% of all collected tax revenues. We hope this plot will evoke many thoughts of income equality and redistribtuion of tax income.  
+This plot shows how over time the amount (in terms of share) that the top income earners have paid has changed in relation to the total amount of taxes contributed by Finnish nationals. As of 2013, the top 0.4% contributed 0.8% of all collected tax revenues. We hope this plot will evoke many thoughts of income equality and redistribtuion of tax income.  
 
 
 
@@ -188,7 +191,7 @@ qplot(shares$year, shares$share, caption='\n Top 0.4% Share of Total Paid Finnis
 ```
 
 
-Our final plot goes out to fans of statistics and serves as a nudge to continue reading [our research]((https://github.com/kylejott/Final_Project/blob/master/final_paper.pdf). It simply plots the distributions of logged taxable income across our five years. 
+Our final plot goes out to fans of statistics and serves as a nudge to continue reading [our research](https://github.com/kylejott/Final_Project/blob/master/final_paper.pdf). It simply plots the distributions of logged taxable income across our five years. 
 
 ```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
 clean$year2 <- as.character(clean$year)
@@ -205,7 +208,7 @@ m2 + geom_density(aes(colour=year2)) +
 
 ## Final Thoughts 
 
-We are inspired by the work of top tax economists that has been spearheaded by Thomas Piketty who is behind the *World Top Income Database* which is found [here](http://topincomes.parisschoolofeconomics.eu/). We encourage you to take a look at this website if you are interested in the very limited amount (but very important) work underway on understanding behovoiral changes of top income earners.
+We are inspired by the work of top tax economists that has been spearheaded by [Thomas Piketty](http://piketty.pse.ens.fr/en/) who is behind the *World Top Income Database* which is found [here](http://topincomes.parisschoolofeconomics.eu/). We encourage you to take a look at this website if you are interested in the very limited amount (but very important) work underway on understanding behovoiral changes of top income earners.
 
 Thanks for reading our website!
 
