@@ -107,19 +107,14 @@ t1c_sum <- merge(t1b_sum, t1_rat_sum,
 summarytableTS <- rbind(t1c, t1c_sum)
 ```
 ```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
-
+# i cannot figure out how to get better spacing on the label columns
 knitr::kable(summarytableTS, align ='c', digits = 0, format='html',
-                stylesheet = 'flat-table.css',
-             col.names=c("Year", "# of Taxpayers", "Ave Income", "Median Income",
+             col.names=c("Year", "# of obs", "Ave Inc", "Median Inc",
                          "Ave Taxes Paid", "Median Taxes Paid",
-                         "Mean Tax (%)", "Med Tax (%)"))
+                         "Ave Tax", "Med Tax"))
 ```
 
-
-
-<br>
-
-More text
+![(figure created by authors)](Figures/shareplot_web.png)
 
 
 
