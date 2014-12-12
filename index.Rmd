@@ -11,14 +11,34 @@ output: html_document
 Data is from Finnish finance daily, called [Taloussanomat](http://www.taloussanomat.fi/).
 We have scraped the data that they have [published](http://www.taloussanomat.fi/verotiedot/2009/suurituloisimmat/). Here is a screenshot of the website with the tax information for the year 2010:
 
-![(figure created by authors)](Figures/newspaper2.png)
+![(figure created by authors)](Figures/newspaper.png)
 
 <br>
 
 ### Data Overview
 
-Example of an interactive chart?
+```{r echo =FALSE, cache=FALSE, include=TRUE, results='asis', warning=FALSE, error=FALSE, message=FALSE}
+library(ggvis)
+library(devtools)
+library(googleVis)
+library(repmis)
+library(rCharts)
+library(reshape2)
+library(httpuv)
 
+# set your working directory here
+setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
+# Import "clean" df from repository
+load("clean.RData")
+
+
+
+r1 <- rPlot(taxes_paid ~ total_inc, data = clean, type = "point", color = "year")
+r1$print("chart1")
+
+
+
+```
 
 ```
 
