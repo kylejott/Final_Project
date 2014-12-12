@@ -1,59 +1,129 @@
 ---
-title: 'The Top 0.4% Income Earners in Finland from 2009 to 2013'
+title: 'Top income earners in Finland'
 author: "Kyle Ott and Cornelius Schneider"
 date: "December 12, 2014"
 output: html_document
 ---
-
-<br>
-
-### Welcome to Our Website 
-Data is from Finnish finance daily, called [Taloussanomat](http://www.taloussanomat.fi/).
-We have scraped the data that they have [published](http://www.taloussanomat.fi/verotiedot/2009/suurituloisimmat/). Here is a screenshot of the website with the tax information for the year 2010:
-
-![(figure created by authors)](Figures/newspaper.png)
-
-<br>
-
-### Data Overview
-
-```{r echo =FALSE, cache=FALSE, include=TRUE, results='asis', warning=FALSE, error=FALSE, message=FALSE}
-library(ggvis)
-library(devtools)
-library(googleVis)
-library(repmis)
-library(rCharts)
-library(reshape2)
-library(httpuv)
+```{r, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+pkgs <- c('httr', 'dplyr', 'XML', 'ggplot2', 'stringr', 'car', 'devtools', 'rsdmx', 'stargazer', 'knitr', 'tidyr', 'reshape2', 'sandwich', 'lmtest', 'plm' )
+repmis::LoadandCite(pkgs, file = 'packages1.bib')
 
 # set your working directory here
 setwd("/Users/Kyle/Dropbox/!Fall_2014/Collab_Data/Final_Project/")
-# Import "clean" df from repository
+
+##################################
+# Final Assignment: Data Science Course
+# Kyle Ott & Cornelius Schneider
+# December 12, 2014
+##################################
+
+# Load packages
+library(httr)
+library(dplyr)
+library(XML)
+library(ggplot2)
+library(stringr)
+library(car)
+library(devtools)
+library(rsdmx)
+library(stargazer)
+library(knitr)
+library(tidyr)
+library(reshape2)
+library(sandwich)
+library(lmtest)
+library(plm)
+
+load("cleaned.RData")
+
+```
+
+## Welcome to our website!
+
+
+
+<br>
+
+**Since 2009, Finland’s largest business online daily newspaper [Taloussanomat](http://www.taloussanomat.fi) publishes the top 15,000 income earners who are 18 years or older. The data includes their name, total income, taxed paid, and their average tax rate.**  
+
+
+![(figure created by authors)](Figures/newspaper.png)
+(source: screenshot of [Taloussanomat website](http://www.taloussanomat.fi/verotiedot/2009/suurituloisimmat/))  
+<br>
+*Until now*, this information has been provided in tables that are in an unsatifactory format. To advance the transparency and openess of the data, we (researchers) have scraped the [raw data](https://github.com/kylejott/Final_Project/blob/master/all.RData) that has so far been published (the years 2009 to 2013) and cleaned it so that you can take a look at all 70,402 tax payer information in one [dataset](https://github.com/kylejott/Final_Project/blob/master/clean.RData).  
+
+
+<br>
+We have reached out to *Taloussanomat*, but have not heard back from them for official comment. **Our purpose for doing this is for academic purposes**, of which we have written a paper entitled *The Top (0.4%) Tail of Finland: A Tale of Incomes, Tax Rates, and Elasticities from 2009 to 2013* which you can find a pdf version [here](https://github.com/kylejott/Final_Project/blob/master/final_paper.pdf).  
+
+
+<br>
+**Our intent for this website, is serve as a portal for information about this dataset on Finland's top income-earners.** All of our code is located in an [open repository](https://github.com/kylejott/Final_Project) of which we welcome others to contribute and make comments. Other than finding links, this website also presents summary information about the dataset, which is lacking on the Taloussanomat website.  
+
+
+
+## Data Overview
+
+In a first step we [scraped the data](https://github.com/kylejott/Final_Project/blob/master/data_scraping.R) from the *Taloussanomat* [dedicated website](http://www.taloussanomat.fi/verotiedot/2009/suurituloisimmat/). 
+<br>
+The variables given by our scraped data are as follows: full name, total income (in euros), total taxes paid (in euros), average tax rate (in percent), and the tax year. The following table provides a quick overview:
+
+```{r echo =FALSE, cache=FALSE, include=TRUE, results='asis', warning=FALSE, error=FALSE, message=FALSE}
+
+load("cleaned.RData")
+cleaned2 <- group_by(cleaned, year)
+
+obs_all <- tally(cleaned2)
+t1_totinc <- summarise(cleaned2, mean1=mean(total_inc),median1=median(total_inc))
+t1_tottax <- summarise(cleaned2, mean2=mean(taxes_paid),median2=median(taxes_paid))
+t1_rat <- summarise(cleaned2, mean3=mean(ratio),median3=median(ratio))
+
+t1a <- merge(obs_all, t1_totinc,
+             by = c('year'))
+t1b <- merge(t1a, t1_tottax,
+             by = c('year'))
+t1c <- merge(t1b, t1_rat,
+             by = c('year'))
+
 load("clean.RData")
 
+obs_all_sum <- tally(clean)
+t1_totinc_sum <- summarise(clean, mean1=mean(total_inc),median1=median(total_inc))
+t1_tottax_sum <- summarise(clean, mean2=mean(taxes_paid),median2=median(taxes_paid))
+t1_rat_sum <- summarise(clean, mean3=mean(ratio),median3=median(ratio))
 
+obs_all_sum$year <- c('All')
+t1_totinc_sum$year <- c('All')
+t1_tottax_sum$year <- c('All')
+t1_rat_sum$year <- c('All')
 
-r1 <- rPlot(taxes_paid ~ total_inc, data = clean, type = "point", color = "year")
-r1$print("chart1")
+t1a_sum <- merge(obs_all_sum, t1_totinc_sum,
+                 by = c('year'))
+t1b_sum <- merge(t1a_sum, t1_tottax_sum,
+                 by = c('year'))
+t1c_sum <- merge(t1b_sum, t1_rat_sum,
+                 by = c('year'))
 
+summarytableTS <- rbind(t1c, t1c_sum)
+```
+```{r, results='asis', echo=FALSE, error=FALSE, warning=FALSE}
 
-
+knitr::kable(summarytableTS, align ='c', digits = 0, format='html',
+                stylesheet = 'flat-table.css',
+             col.names=c("Year", "# of Taxpayers", "Ave Income", "Median Income",
+                         "Ave Taxes Paid", "Median Taxes Paid",
+                         "Mean Tax (%)", "Med Tax (%)"))
 ```
 
-```
+
 
 <br>
 
 More text
 
 
-<br>
 
-More text
-
-
-
-### Conclusions  
+## Final Thoughts 
 
 
 Our conc   
