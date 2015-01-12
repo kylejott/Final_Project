@@ -346,6 +346,7 @@ stargazer::stargazer(M1, M2, covariate.labels = labels,
 
 ## Panel Results
 
+Running the first panel model, pooled OLS yields an ETI 0.105, highly significant at the 1% level (with a confidence interval between 0.040 and 0.170). Knowing that panel specific effects are present, we proceeded with a within estimator. This result indicates an ETI 0.640, highly significant at the 1% level (with a confidence interval between 0.381 and 0.897). In detail, this yields the implication, that a 1% increase in the average tax rate would increase the reported taxable income by 0.0640%. 
 
 
 ```{r, inlcude=FALSE, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
@@ -426,7 +427,7 @@ Our exploration of our unique dataset has allowed us to initially explore the to
 ***
 Final word count: 5,593
 
-This project used @CiteRStudio to create this assignment.
+This project used @CiteRStudio and @R-rsdmx to create this assignment.
 
 \pagebreak
 
